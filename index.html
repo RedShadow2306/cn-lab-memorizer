@@ -1,0 +1,3917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CN Lab Code Memorizer — Experiments 5–9</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #111827;
+      --surface-2: #1a2333;
+      --surface-3: #222e42;
+      --border: #2b3950;
+      --border-strong: #3b4f6e;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --green: #10b981;
+      --green-soft: rgba(16, 185, 129, 0.18);
+      --green-text: #6ee7b7;
+      --red: #f43f5e;
+      --red-soft: rgba(244, 63, 94, 0.22);
+      --red-text: #fda4af;
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.16);
+      --violet: #a78bfa;
+      --violet-soft: rgba(167, 139, 250, 0.16);
+      --mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top right, #131c31 0%, var(--bg) 52%);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 20px 48px;
+    }
+
+    /* Header */
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.25);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .overall-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .overall-pill strong {
+      color: var(--green-text);
+      font-family: var(--mono);
+    }
+
+    /* Controls Bar */
+    .controls-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    label.field-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    select {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-family: var(--sans);
+      cursor: pointer;
+      outline: none;
+      min-width: 280px;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: var(--bg);
+      padding: 3px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      gap: 3px;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 7px 13px;
+      border-radius: 7px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .seg-btn:hover {
+      color: var(--text);
+    }
+
+    .seg-btn.active {
+      background: var(--surface-3);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .seg-btn.mode-learn.active {
+      background: #0369a1;
+    }
+
+    .seg-btn.mode-test.active {
+      background: #7c3aed;
+    }
+
+    .seg-btn.mode-mastery.active {
+      background: #059669;
+    }
+
+    .btn {
+      border: 1px solid var(--border-strong);
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 7px 13px;
+      border-radius: 9px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--surface-3);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #0369a1;
+    }
+
+    .btn-success {
+      background: #059669;
+      border-color: #34d399;
+      color: #fff;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: #047857;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+
+    .badge-proto {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+    }
+
+    .badge-done {
+      background: var(--green-soft);
+      color: var(--green-text);
+    }
+
+    /* Info Strip */
+    .aim-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .aim-banner strong {
+      color: var(--text);
+    }
+
+    /* Stepper */
+    .stepper-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    .stepper-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stepper-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .toggle-inline input {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .stepper-track {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .step-pill {
+      flex: 1 1 140px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      text-align: left;
+      color: var(--text);
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+
+    .step-pill:hover:not(:disabled) {
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+
+    .step-pill:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .step-pill.active {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.16);
+    }
+
+    .step-pill.mastered {
+      border-color: rgba(16, 185, 129, 0.55);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .step-pill-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+    }
+
+    .step-pill-name {
+      font-size: 0.83rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .step-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border-strong);
+    }
+
+    .dot.learned {
+      background: var(--accent);
+    }
+
+    .dot.tested {
+      background: var(--green);
+    }
+
+    /* Workspace Panel */
+    .workspace {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .workspace-head {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chunk-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sec-tag {
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .sec-imports {
+      background: rgba(56, 189, 248, 0.16);
+      color: #7dd3fc;
+    }
+
+    .sec-setup {
+      background: rgba(167, 139, 250, 0.16);
+      color: #c4b5fd;
+    }
+
+    .sec-connection {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fcd34d;
+    }
+
+    .sec-transfer {
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+    }
+
+    .sec-cleanup {
+      background: rgba(244, 63, 94, 0.16);
+      color: #fda4af;
+    }
+
+    .sec-mastery {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(56, 189, 248, 0.22));
+      color: #a7f3d0;
+    }
+
+    .stats-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .stat-val.good {
+      color: var(--green-text);
+    }
+
+    .stat-val.bad {
+      color: var(--red-text);
+    }
+
+    .workspace-body {
+      padding: 16px;
+    }
+
+    .helper-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    kbd {
+      background: var(--surface-3);
+      border: 1px solid var(--border-strong);
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text);
+    }
+
+    /* Learn Mode: Separate Refer Code Box + Typing Text Box */
+    .learn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .learn-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .learn-box-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .learn-canvas-wrap {
+      position: relative;
+      background: #070b13;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      overflow: auto;
+      max-height: 320px;
+    }
+
+    .learn-editor-shell {
+      min-height: 170px;
+    }
+
+    .learn-editor-textarea {
+      min-height: 170px;
+    }
+
+    .code-lines {
+      padding: 12px 0;
+      font-family: var(--mono);
+      font-size: 14.5px;
+      line-height: 1.7;
+      overflow-x: auto;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .code-line {
+      display: flex;
+      align-items: flex-start;
+      padding: 1px 14px 1px 0;
+      min-height: 25px;
+    }
+
+    .code-line.current-line {
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    .line-num {
+      width: 44px;
+      flex: 0 0 44px;
+      text-align: right;
+      padding-right: 14px;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .line-content {
+      flex: 1;
+      white-space: pre;
+      min-width: 0;
+    }
+
+    .line-status {
+      width: 26px;
+      flex: 0 0 26px;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    /* Char styles */
+    .ch {
+      position: relative;
+      display: inline;
+      border-radius: 2px;
+    }
+
+    .ch-ok {
+      color: var(--green-text);
+      background: rgba(16, 185, 129, 0.13);
+    }
+
+    .ch-space-ok {
+      color: rgba(110, 231, 183, 0.55);
+      background: rgba(16, 185, 129, 0.16);
+    }
+
+    .ch-bad {
+      color: #fff;
+      background: rgba(244, 63, 94, 0.75);
+      text-decoration: underline wavy #fda4af;
+    }
+
+    .ch-extra {
+      color: #fff;
+      background: rgba(244, 63, 94, 0.55);
+      text-decoration: line-through;
+    }
+
+    .ch-missing {
+      color: var(--red-text);
+      background: rgba(244, 63, 94, 0.25);
+      border-bottom: 2px solid var(--red);
+    }
+
+    .ch-ghost {
+      color: #64748b;
+    }
+
+    .ch-ghost-space {
+      color: #334155;
+    }
+
+    .ch-cursor {
+      box-shadow: inset 2px 0 0 #38bdf8;
+      background: rgba(56, 189, 248, 0.22);
+      animation: blink 1s step-end infinite;
+    }
+
+    .cursor-eol {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: #38bdf8;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0.15;
+      }
+    }
+
+    .learn-feedback {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.84rem;
+      font-family: var(--mono);
+    }
+
+    .learn-feedback.has-error {
+      border-color: rgba(244, 63, 94, 0.5);
+      background: rgba(244, 63, 94, 0.08);
+      color: var(--red-text);
+    }
+
+    .learn-feedback.complete {
+      border-color: rgba(16, 185, 129, 0.55);
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--green-text);
+    }
+
+    /* Test & Mastery Editor */
+    .editor-shell {
+      display: flex;
+      background: #070b13;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 220px;
+    }
+
+    .editor-shell:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .editor-gutter {
+      width: 48px;
+      background: #0b111e;
+      border-right: 1px solid var(--border);
+      padding: 14px 8px;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-dim);
+      text-align: right;
+      -webkit-user-select: none;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .editor-textarea {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14.5px;
+      line-height: 1.7;
+      padding: 14px;
+      resize: vertical;
+      min-height: 220px;
+      tab-size: 4;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+    }
+
+    .editor-actions {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Section map in Final Mastery */
+    .section-checklist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .sec-chip {
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    /* Strict Error Report */
+    .report-box {
+      margin-top: 16px;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0b111e;
+    }
+
+    .report-summary {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .report-summary.pass {
+      background: rgba(16, 185, 129, 0.14);
+    }
+
+    .report-summary.fail {
+      background: rgba(244, 63, 94, 0.12);
+    }
+
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 13.5px;
+    }
+
+    .diff-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .diff-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(43, 57, 80, 0.55);
+      vertical-align: top;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .diff-row-ok {
+      background: rgba(16, 185, 129, 0.04);
+    }
+
+    .diff-row-err {
+      background: rgba(244, 63, 94, 0.07);
+    }
+
+    .err-reason {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      color: var(--red-text);
+    }
+
+    /* Modals & Drawers */
+    .ref-drawer {
+      background: #070b13;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .ref-drawer.open {
+      display: block;
+    }
+
+    .ref-drawer pre {
+      margin: 10px 0 0;
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: #cbd5e1;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.78);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 760px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal h2 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .modal textarea {
+      width: 100%;
+      min-height: 220px;
+      background: #070b13;
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 13.5px;
+      margin: 10px 0;
+      tab-size: 4;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--surface-3);
+      border: 1px solid var(--border-strong);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: all 0.2s ease;
+      z-index: 60;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .peek-overlay {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--amber-soft);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      font-family: var(--mono);
+      font-size: 13.5px;
+      white-space: pre;
+      overflow-x: auto;
+      color: #fde68a;
+    }
+
+    .is-hidden {
+      display: none;
+    }
+
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .row-gap-8 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .row-gap-10 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .row-end {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn-xs {
+      padding: 3px 9px;
+      font-size: 0.78rem;
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+    }
+
+    .ref-heading {
+      font-size: 0.86rem;
+      color: var(--accent);
+    }
+
+    .prog-badge {
+      background: var(--surface-3);
+      color: var(--text-muted);
+    }
+
+    .chunk-title-text {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .space-dot-hint {
+      color: var(--text-dim);
+    }
+
+    .editor-metrics {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    .modal-desc {
+      margin: 4px 0 8px;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .txt-ok {
+      color: var(--green-text);
+    }
+
+    .txt-bad {
+      color: var(--red-text);
+    }
+
+    .txt-dim {
+      color: var(--text-dim);
+    }
+
+    .diff-col-line {
+      color: var(--text-dim);
+      width: 46px;
+    }
+
+    .diff-col-st {
+      width: 32px;
+      text-align: center;
+    }
+
+    .report-title-ok {
+      font-weight: 700;
+      color: var(--green-text);
+    }
+
+    .report-title-bad {
+      font-weight: 700;
+      color: var(--red-text);
+    }
+
+    .report-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-family: var(--mono);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    /* Common Lines Guide & Badges */
+    .common-strip {
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.28);
+      border-left: 3px solid var(--violet);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+
+    .common-strip-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .common-label {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .common-label.shared {
+      background: var(--violet-soft);
+      color: #c4b5fd;
+    }
+
+    .common-label.unique {
+      background: var(--accent-soft);
+      color: #7dd3fc;
+    }
+
+    .common-code-chips {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .common-chip {
+      font-family: var(--mono);
+      font-size: 0.77rem;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      padding: 1px 7px;
+      border-radius: 5px;
+    }
+
+    .line-common-tag {
+      flex: 0 0 auto;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: #c4b5fd;
+      background: rgba(167, 139, 250, 0.14);
+      border: 1px solid rgba(167, 139, 250, 0.28);
+      border-radius: 999px;
+      padding: 0 7px;
+      margin-right: 8px;
+      align-self: center;
+      line-height: 1.5;
+      white-space: nowrap;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .common-drawer {
+      background: #0b111e;
+      border: 1px solid rgba(167, 139, 250, 0.4);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .common-drawer.open {
+      display: block;
+    }
+
+    .common-heading {
+      font-size: 0.88rem;
+      color: #c4b5fd;
+    }
+
+    .common-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .common-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .common-card h3 {
+      margin: 0 0 6px;
+      font-size: 0.82rem;
+      color: var(--accent);
+      font-family: var(--mono);
+    }
+
+    .common-card pre {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 0.77rem;
+      line-height: 1.55;
+      color: #cbd5e1;
+      overflow-x: auto;
+    }
+
+    .common-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.79rem;
+      font-family: var(--mono);
+    }
+
+    .common-table th,
+    .common-table td {
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .common-table th {
+      color: var(--text-muted);
+      background: var(--surface-2);
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+    }
+
+    .stepper-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .split-select {
+      min-width: 170px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    /* Token-Level Diff Highlights */
+    .hl-expected {
+      background: rgba(16, 185, 129, 0.25);
+      color: #6ee7b7;
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    .hl-wrong {
+      background: rgba(244, 63, 94, 0.45);
+      color: #fff;
+      border-radius: 3px;
+      padding: 0 2px;
+      text-decoration: underline wavy #fda4af;
+    }
+
+    .hl-wrong-indent {
+      background: rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      border-radius: 3px;
+      padding: 0 3px;
+      font-weight: 700;
+    }
+
+    .hl-miss-pill {
+      background: rgba(244, 63, 94, 0.22);
+      color: #fda4af;
+      border: 1px dashed rgba(244, 63, 94, 0.65);
+      border-radius: 4px;
+      padding: 0 5px;
+      margin: 0 2px;
+      font-size: 0.76rem;
+    }
+
+    .diff-row-clickable {
+      cursor: pointer;
+    }
+
+    .diff-row-clickable:hover {
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    @media (max-width: 720px) {
+      select {
+        min-width: 100%;
+      }
+
+      .line-num {
+        width: 32px;
+        flex-basis: 32px;
+        padding-right: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">&lt;/&gt;</div>
+        <div>
+          <h1>CN Lab Code Memorizer</h1>
+          <p>Experiments 5–9 · Smart Auto-Chunker · Gedit Auto-Indent · Flexible Symbol Spacing</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="overall-pill" title="Files passed in Final Mastery Mode">
+          Mastered: <strong id="overallMastered">0 / 10</strong>
+        </div>
+        <button class="btn" id="btnCommonToggle" type="button">Common Lines</button>
+        <button class="btn" id="btnRefToggle" type="button">View Full Code</button>
+        <button class="btn" id="btnCustomModal" type="button">+ Custom Code</button>
+        <button class="btn btn-ghost" id="btnResetProgress" type="button" title="Reset saved mastery progress">Reset
+          Progress</button>
+      </div>
+    </header>
+
+    <!-- Primary Controls -->
+    <section class="controls-card">
+      <div class="control-group">
+        <label class="field-label" for="expSelect">Experiment</label>
+        <select id="expSelect"></select>
+        <span class="badge badge-proto" id="protoBadge">TCP :9002</span>
+      </div>
+
+      <div class="control-group">
+        <label class="field-label">Role</label>
+        <div class="segmented" id="roleSwitcher">
+          <button class="seg-btn active" data-role="server" type="button" id="btnRoleServer">Server</button>
+          <button class="seg-btn" data-role="client" type="button" id="btnRoleClient">Client</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="field-label">Mode</label>
+        <div class="segmented" id="modeSwitcher">
+          <button class="seg-btn mode-learn active" data-mode="learn" type="button">Learn Mode</button>
+          <button class="seg-btn mode-test" data-mode="test" type="button">Test Mode</button>
+          <button class="seg-btn mode-mastery" data-mode="mastery" type="button">Final Mastery</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Aim Banner -->
+    <div class="aim-banner">
+      <div>
+        <strong id="aimFileLabel">server5.py</strong> — <span id="aimText"></span>
+      </div>
+      <div id="chunkCountSummary" class="badge badge-proto">5 Auto-Chunks</div>
+    </div>
+
+    <!-- Per-File Common vs Unique Breakdown (Hidden in Test/Mastery) -->
+    <div class="common-strip" id="commonStrip">
+      <div class="common-strip-row">
+        <span class="common-label shared">Common Lines</span>
+        <div class="common-code-chips" id="commonSharedChips"></div>
+      </div>
+      <div class="common-strip-row">
+        <span class="common-label unique">Unique Here</span>
+        <span id="commonUniqueNote"></span>
+      </div>
+    </div>
+
+    <!-- Collapsible Common Lines Cheat Sheet Drawer -->
+    <div class="common-drawer" id="commonDrawer">
+      <div class="row-between">
+        <strong class="common-heading">Common Lines Across Experiments 5–9 (Memorize Once, Reuse Everywhere)</strong>
+        <button class="btn btn-ghost btn-xs" id="btnCloseCommon" type="button">Hide</button>
+      </div>
+      <div class="common-grid">
+        <div class="common-card">
+          <h3>1. Universal Socket Skeleton (All 10 Files)</h3>
+          <pre>import socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP (5,7,9)
+# or client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP (6,8)
+server_address = ("127.0.0.1", PORT)                               # 8080 / 1234 / 9002
+...
+server_socket.close()  # or client_socket.close()</pre>
+        </div>
+        <div class="common-card">
+          <h3>2. Common Connection &amp; Loop Pattern</h3>
+          <pre># Server: server_socket.bind(server_address) (+ listen &amp; accept for TCP)
+# TCP Client: client_socket.connect(server_address)
+while True:
+    # recv/input → if == "exit"/"stop": break → send/print
+client_socket.close()</pre>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table class="common-table">
+          <thead>
+            <tr>
+              <th>Exp</th>
+              <th>Protocol &amp; Port</th>
+              <th>Common Structure Shared</th>
+              <th>Unique Logic to Memorize</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Exp 5</td>
+              <td>TCP :8080</td>
+              <td>socket, server_address, bind/listen/accept, connect, while True ("exit" break)</td>
+              <td>import ast, ast.literal_eval(data), is_diagonal / is_upper / is_lower loops</td>
+            </tr>
+            <tr>
+              <td>Exp 6</td>
+              <td>UDP :8080</td>
+              <td>SOCK_DGRAM, server_address, bind, while True ("exit" break), sendto/recvfrom</td>
+              <td>abbreviations dict + def translate(sentence)</td>
+            </tr>
+            <tr>
+              <td>Exp 7</td>
+              <td>TCP :8080</td>
+              <td>SOCK_STREAM, server_address, bind/listen/accept, while True ("exit" break)</td>
+              <td>def handle_client(connection, client_address) + threading.Thread(...)</td>
+            </tr>
+            <tr>
+              <td>Exp 8</td>
+              <td>UDP :1234</td>
+              <td>Same UDP loop pattern as Exp 6 (port 1234 &amp; "stop" instead of "exit")</td>
+              <td>import time + time.localtime() + time.strftime("%Y-%m-%d %H:%M:%S", ...)</td>
+            </tr>
+            <tr>
+              <td>Exp 9</td>
+              <td>TCP :9002</td>
+              <td>Same threaded TCP skeleton as Exp 7 (port 9002)</td>
+              <td>import os, os.getpid(), os.path.exists/isfile(filename), open(filename, "r")</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Collapsible Full Reference Drawer -->
+    <div class="ref-drawer" id="refDrawer">
+      <div class="row-between">
+        <strong class="ref-heading">Reference Code (<span id="refTitle"></span>)</strong>
+        <button class="btn btn-ghost btn-xs" id="btnCloseRef" type="button">Hide</button>
+      </div>
+      <pre id="refCodePre"></pre>
+    </div>
+
+    <!-- Progression Stepper -->
+    <section class="stepper-card">
+      <div class="stepper-head">
+        <div class="stepper-title">
+          <span>Smart Auto-Chunk Progression</span>
+          <span class="badge prog-badge" id="progressionHint"></span>
+        </div>
+        <div class="stepper-controls">
+          <select id="splitModeSelect" class="split-select" aria-label="Chunk splitting mode"
+            title="Choose how code is divided into memorization chunks">
+            <option value="auto">Smart Split (2-Part for Small)</option>
+            <option value="while-split">Force 2-Part (Above / With while)</option>
+            <option value="sections">Detailed 5-Section Split</option>
+          </select>
+          <label class="toggle-inline"
+            title="Allow jumping to any chunk or Final Mastery without completing prior chunks">
+            <input type="checkbox" id="chkFreeNav" />
+            <span>Unlock All Chunks</span>
+          </label>
+        </div>
+      </div>
+      <div class="stepper-track" id="stepperTrack"></div>
+    </section>
+
+    <!-- Main Interactive Workspace -->
+    <main class="workspace">
+      <div class="workspace-head">
+        <div class="chunk-meta">
+          <span class="sec-tag" id="activeSecTag">a) Imports / Includes</span>
+          <span id="activeChunkTitle" class="chunk-title-text">Chunk 1 of 5</span>
+        </div>
+        <div class="stats-row" id="statsRow">
+          <span>Accuracy: <span class="stat-val" id="statAcc">100%</span></span>
+          <span>Errors: <span class="stat-val" id="statErr">0</span></span>
+          <span>Progress: <span class="stat-val" id="statProg">0%</span></span>
+        </div>
+      </div>
+
+      <div class="workspace-body">
+        <!-- LEARN MODE VIEW -->
+        <div id="learnView">
+          <div class="helper-bar">
+            <span>Refer to the code box above and type in the separate text box below. <kbd>Enter</kbd> auto-indents
+              (+4 spaces after <code>:</code>) · <kbd>Backspace</kbd> dedents 4 spaces · Spaces around <code>,</code>
+              &amp; <code>=</code> are flexible.</span>
+          </div>
+
+          <div class="learn-stack">
+            <!-- Top: Refer Code Box -->
+            <div class="learn-panel">
+              <div class="learn-box-hdr">
+                <span>Refer Code Box (Live Match) · <span id="learnTargetInfo">0 lines</span></span>
+                <div class="row-gap-10">
+                  <label class="toggle-inline">
+                    <input type="checkbox" id="chkCommonTags" checked />
+                    <span>Tag common lines</span>
+                  </label>
+                  <label class="toggle-inline">
+                    <input type="checkbox" id="chkShowSpaces" checked />
+                    <span>Show space dots (·)</span>
+                  </label>
+                </div>
+              </div>
+              <div class="learn-canvas-wrap" id="learnCanvasWrap">
+                <div class="code-lines" id="learnLines"></div>
+              </div>
+            </div>
+
+            <!-- Bottom: Separate Typing Text Box -->
+            <div class="learn-panel">
+              <div class="learn-box-hdr">
+                <span>Your Typing Box</span>
+                <div class="row-gap-10">
+                  <span class="editor-metrics" id="learnMetrics">Lines: 1 / 1 · Chars: 0</span>
+                  <button class="btn btn-ghost btn-xs" id="btnLearnReset" type="button">Reset</button>
+                </div>
+              </div>
+              <div class="editor-shell learn-editor-shell">
+                <div class="editor-gutter" id="learnGutter">1</div>
+                <textarea id="learnInput" class="editor-textarea learn-editor-textarea"
+                  aria-label="Learn mode separate typing text box" title="Learn mode separate typing text box"
+                  spellcheck="false" autocomplete="off"
+                  placeholder="Type the code here... (Tab = 4 spaces, Enter = gedit auto-indent)"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="learn-feedback" id="learnFeedback">
+            <span id="learnMsg">Type inside the text box above to start live validation...</span>
+            <div id="learnNextActions" class="row-gap-8"></div>
+          </div>
+        </div>
+
+        <!-- TEST & FINAL MASTERY VIEW -->
+        <div id="testView" class="is-hidden">
+          <div class="helper-bar">
+            <span id="testInstruction">Type from memory. Gedit <kbd>Enter</kbd> auto-indent enabled · Spaces around
+              <code>,</code> &amp; <code>=</code> are flexible · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to verify.</span>
+            <div class="row-gap-10">
+              <label class="toggle-inline is-hidden" id="wrapStrictBlank">
+                <input type="checkbox" id="chkStrictBlank" />
+                <span>Strict blank lines between sections</span>
+              </label>
+              <button class="btn btn-ghost btn-sm" id="btnPeek" type="button">Peek (3s)</button>
+              <button class="btn btn-ghost btn-sm" id="btnTestClear" type="button">Clear</button>
+            </div>
+          </div>
+
+          <div id="masterySectionChecklist" class="section-checklist is-hidden"></div>
+
+          <div class="editor-shell">
+            <div class="editor-gutter" id="testGutter">1</div>
+            <textarea id="testInput" class="editor-textarea" aria-label="Code from memory editor"
+              title="Code from memory editor" spellcheck="false" autocomplete="off"
+              placeholder="Type code from memory here..."></textarea>
+          </div>
+
+          <div id="peekBox" class="peek-overlay is-hidden"></div>
+
+          <div class="editor-actions">
+            <div class="editor-metrics" id="editorMetrics">Lines: 1 / 1 · Chars: 0</div>
+            <div class="row-gap-8">
+              <button class="btn btn-ghost" id="btnBackToLearn" type="button">← Back to Learn</button>
+              <button class="btn btn-primary" id="btnVerify" type="button">Verify Code (Ctrl+Enter)</button>
+            </div>
+          </div>
+
+          <div id="reportContainer"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Custom Code Modal -->
+  <div class="modal-backdrop" id="customModal">
+    <div class="modal">
+      <div class="row-between">
+        <h2>Test Smart Auto-Chunker with Custom Code</h2>
+        <button class="btn btn-ghost btn-sm" id="btnCloseModal" type="button">✕</button>
+      </div>
+      <p class="modal-desc">
+        Paste any Python or C socket program below. The Regex/heuristic Smart Auto-Chunker will split it into Imports,
+        Socket Setup, Connection Setup, Data Transfer, and Cleanup.
+      </p>
+      <textarea id="customCodeArea" aria-label="Custom code to auto-chunk" title="Custom code to auto-chunk"
+        spellcheck="false" placeholder="import socket&#10;s = socket.socket(...)"></textarea>
+      <div class="row-end">
+        <button class="btn btn-ghost" id="btnCancelCustom" type="button">Cancel</button>
+        <button class="btn btn-primary" id="btnLoadCustom" type="button">Auto-Chunk &amp; Load</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // =========================================================================
+    // 1. Preloaded Experiments (Copied from Folder .py Files & Verified Error-Free)
+    // =========================================================================
+    const EXPERIMENTS = [
+      {
+        id: "exp5",
+        label: "Exp 5: TCP Matrix Classifier",
+        protocol: "TCP",
+        port: 8080,
+        aim: "Client sends a square matrix over TCP in a while loop until 'exit'; server evaluates Diagonal, Upper Triangular, Lower Triangular, or Regular Matrix.",
+        files: {
+          server: {
+            filename: "server2.py",
+            code: [
+              "import socket",
+              "import ast",
+              "",
+              "server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+              'server_address = ("127.0.0.1", 8080)',
+              "",
+              "server_socket.bind(server_address)",
+              "server_socket.listen(1)",
+              'print("Server Active....Waiting for connection...")',
+              "",
+              "connection, client_address = server_socket.accept()",
+              'print(f"Connection established with {client_address}")',
+              "",
+              "while True:",
+              "    data = connection.recv(1024)",
+              "    data = data.decode()",
+              "",
+              "    if not data or data == 'exit':",
+              '        print("Client has disconnected.")',
+              "        break",
+              "",
+              "    matrix = ast.literal_eval(data)",
+              "    for row in matrix:",
+              "        print(row)",
+              '    print("---------------------------------------------------")',
+              "",
+              "    is_diagonal = True",
+              "    is_lower = True",
+              "    is_upper = True",
+              "",
+              "    for i in range(len(matrix)):",
+              "        for j in range(len(matrix)):",
+              "            if i > j and matrix[i][j] != 0:",
+              "                is_upper = False",
+              "            if i < j and matrix[i][j] != 0:",
+              "                is_lower = False",
+              "            if i != j and matrix[i][j] != 0:",
+              "                is_diagonal = False",
+              "",
+              "    if is_diagonal:",
+              '        result = "Matrix Type = Diagonal Matrix!!!....."',
+              "    elif is_upper:",
+              '        result = "Matrix Type = UpperTriangular Matrix!!!....."',
+              "    elif is_lower:",
+              '        result = "Matrix Type = LowerTriangular Matrix!!!....."',
+              "    else:",
+              '        result = "Matrix Type = RegularMatrix!!!....."',
+              "",
+              "    connection.send(result.encode())",
+              "connection.close()",
+              "server_socket.close()"
+            ].join("\n")
+          },
+          client: {
+            filename: "client2.py",
+            code: [
+              "import socket",
+              "",
+              "client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+              'server_address = ("127.0.0.1", 8080)',
+              "",
+              "client_socket.connect(server_address)",
+              "",
+              "while True:",
+              '    matrix = input("Enter a Matrix (type \'exit\' to quit) : ")',
+              "    client_socket.send(matrix.encode())",
+              "",
+              "    if matrix == 'exit':",
+              "        break",
+              "",
+              "    response = client_socket.recv(1024)",
+              "    response = response.decode()",
+              '    print(f"Server response: {response}")',
+              "client_socket.close()"
+            ].join("\n")
+          }
+        }
+      },
+      {
+        id: "exp6",
+        label: "Exp 6: UDP Slang Translator",
+        protocol: "UDP",
+        port: 8080,
+        aim: "Client sends new-generation English slang sentence over UDP; server expands abbreviations into formal English via translate() and returns it.",
+        files: {
+          server: {
+            filename: "udpserver.py",
+            code: [
+              "import socket",
+              "",
+              "server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)",
+              'server_address = ("127.0.0.1", 8080)',
+              "",
+              "server_socket.bind(server_address)",
+              'print("UDP Server Running...")',
+              "",
+              "abbreviations = {",
+              '    "tbh": "to be honest",',
+              '    "idc": "I don\'t care",',
+              '    "ig": "I guess",',
+              '    "tbf": "to be fair",',
+              '    "atm": "at the moment",',
+              '    "irl": "in real life",',
+              '    "lol": "laughing out loud",',
+              '    "asap": "as soon as possible",',
+              '    "omg": "oh my God",',
+              '    "ttyl": "talk to you later",',
+              '    "idk": "I don\'t know",',
+              '    "nvm": "never mind"',
+              "}",
+              "",
+              "def translate(sentence):",
+              "    words = sentence.split()",
+              "    translated_words = []",
+              "    for word in words:",
+              "        lower_word = word.lower()",
+              "        if lower_word in abbreviations:",
+              "            translated_words.append(abbreviations[lower_word])",
+              "        else:",
+              "            translated_words.append(word)",
+              '    return " ".join(translated_words)',
+              "",
+              "while True:",
+              "    data, client_address = server_socket.recvfrom(1024)",
+              "    sentence = data.decode()",
+              "",
+              '    if sentence == "exit":',
+              '        print("Client disconnected.")',
+              "        break",
+              "",
+              '    print(f"Received sentence: {sentence}")',
+              '    print("---------------------------------------------------")',
+              "",
+              "    result = translate(sentence)",
+              "    server_socket.sendto(result.encode(), client_address)",
+              '    print("Translated message sent.")',
+              '    print("---------------------------------------------------")',
+              "",
+              "server_socket.close()",
+              'print("Server stopped.")'
+            ].join("\n")
+          },
+          client: {
+            filename: "udpclient.py",
+            code: [
+              "import socket",
+              "",
+              "client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)",
+              'server_address = ("127.0.0.1", 8080)',
+              "",
+              "while True:",
+              '    Data = input("Enter a Sentence (type \'exit\' to quit) : ")',
+              "    client_socket.sendto(Data.encode(), server_address)",
+              "",
+              "    if Data == 'exit':",
+              "        break",
+              "",
+              "    response, _ = client_socket.recvfrom(1024)",
+              "    response = response.decode()",
+              '    print(f"Server response: {response}")',
+              "client_socket.close()"
+            ].join("\n")
+          }
+        }
+      },
+      {
+        id: "exp7",
+        label: "Exp 7: Multi-User Chat Server (TCP)",
+        protocol: "TCP",
+        port: 8080,
+        aim: "Concurrent multi-user TCP chat server spawning a thread per client to echo messages until 'exit'.",
+        files: {
+          server: {
+            filename: "server7.py",
+            code: [
+              "import socket",
+              "import threading",
+              "",
+              "def handle_client(connection, client_address):",
+              '    print(f"Connection established with {client_address}")',
+              "",
+              "    while True:",
+              "        data = connection.recv(1024)",
+              "        data = data.decode()",
+              "",
+              "        if not data or data == 'exit':",
+              '            print(f"Client {client_address} has disconnected.")',
+              "            break",
+              "",
+              '        print(f"Received from {client_address}: {data}")',
+              '        print("---------------------------------------------------")',
+              "",
+              "        response = data",
+              "        connection.send(response.encode())",
+              "",
+              "    connection.close()",
+              "",
+              "server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+              'server_address = ("127.0.0.1", 8080)',
+              "",
+              "server_socket.bind(server_address)",
+              "server_socket.listen(5)",
+              "",
+              'print("Multi-user Chat Server Active....Waiting for connection...")',
+              "",
+              "while True:",
+              "    connection, client_address = server_socket.accept()",
+              "    client_thread = threading.Thread(target=handle_client, args=(connection, client_address))",
+              "    client_thread.start()",
+              "",
+              "server_socket.close()"
+            ].join("\n")
+          },
+          client: {
+            filename: "client7.py",
+            code: [
+              "import socket",
+              "",
+              "client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+              'server_address = ("127.0.0.1", 8080)',
+              "",
+              "client_socket.connect(server_address)",
+              'print(f"Connected to Chat Server at {server_address}")',
+              "",
+              "while True:",
+              '    message = input("Enter message to send (type \'exit\' to quit): ")',
+              "    client_socket.send(message.encode())",
+              "",
+              "    if message == 'exit':",
+              '        print("Client disconnected.")',
+              "        break",
+              "",
+              "    response = client_socket.recv(1024)",
+              "    response = response.decode()",
+              "",
+              '    print(f"Server response: {response}")',
+              '    print("---------------------------------------------------")',
+              "",
+              "client_socket.close()"
+            ].join("\n")
+          }
+        }
+      },
+      {
+        id: "exp8",
+        label: "Exp 8: Concurrent Time Server (UDP)",
+        protocol: "UDP",
+        port: 1234,
+        aim: "UDP time server replies to client requests with formatted local server timestamp until 'stop'.",
+        files: {
+          server: {
+            filename: "server8.py",
+            code: [
+              "import socket",
+              "import time",
+              "",
+              "server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)",
+              'server_address = ("127.0.0.1", 1234)',
+              "",
+              "server_socket.bind(server_address)",
+              'print("UDP Time Server Running...")',
+              "",
+              "while True:",
+              "    data, client_address = server_socket.recvfrom(1024)",
+              "    message = data.decode()",
+              "",
+              '    print(f"Received message: {message} from {client_address}")',
+              '    print("---------------------------------------------------")',
+              "",
+              '    if message == "stop":',
+              '        print("Client sent \'stop\'. Terminating communication.")',
+              "        break",
+              "",
+              "    current_time = time.localtime()",
+              '    time_str = time.strftime("%Y-%m-%d %H:%M:%S", current_time)',
+              "",
+              "    server_socket.sendto(time_str.encode(), client_address)",
+              '    print(f"Sent time: {time_str}")',
+              '    print("---------------------------------------------------")',
+              "",
+              "server_socket.close()",
+              'print("Server stopped.")'
+            ].join("\n")
+          },
+          client: {
+            filename: "client8.py",
+            code: [
+              "import socket",
+              "",
+              "client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)",
+              'server_address = ("127.0.0.1", 1234)',
+              "",
+              "while True:",
+              '    message = input("Enter a message (type \'stop\' to quit) : ")',
+              "    client_socket.sendto(message.encode(), server_address)",
+              "",
+              "    if message == 'stop':",
+              '        print("Communication terminated.")',
+              "        break",
+              "",
+              "    response, _ = client_socket.recvfrom(1024)",
+              "    response = response.decode()",
+              "",
+              '    print(f"Server time: {response}")',
+              '    print("---------------------------------------------------")',
+              "",
+              "client_socket.close()"
+            ].join("\n")
+          }
+        }
+      },
+      {
+        id: "exp9",
+        label: "Exp 9: Concurrent File Server (TCP)",
+        protocol: "TCP",
+        port: 9002,
+        aim: "Concurrent TCP file server checks requested filename, returns PID + file contents or 'File not found'.",
+        files: {
+          server: {
+            filename: "server9.py",
+            code: [
+              "import socket",
+              "import os",
+              "import threading",
+              "",
+              "def handle_client(connection, client_address):",
+              '    print(f"Connection established with {client_address}")',
+              "",
+              "    filename = connection.recv(1024).decode().strip()",
+              '    print(f"Requested filename: {filename}")',
+              "",
+              "    pid = os.getpid()",
+              "",
+              "    if os.path.exists(filename) and os.path.isfile(filename):",
+              '        with open(filename, "r") as f:',
+              "            file_contents = f.read()",
+              "",
+              '        response = f"PID: {pid}\\nFile Contents:\\n{file_contents}"',
+              '        print(f"File found. Sent contents with PID {pid}.")',
+              "    else:",
+              '        response = f"PID: {pid}\\nFile not found"',
+              '        print(f"File not found. Sent error message with PID {pid}.")',
+              "",
+              "    connection.send(response.encode())",
+              "    connection.close()",
+              '    print("---------------------------------------------------")',
+              "",
+              "server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+              'server_address = ("127.0.0.1", 9002)',
+              "",
+              "server_socket.bind(server_address)",
+              "server_socket.listen(5)",
+              "",
+              'print("File Server Active....Waiting for connection...")',
+              "",
+              "while True:",
+              "    connection, client_address = server_socket.accept()",
+              "    client_thread = threading.Thread(target=handle_client, args=(connection, client_address))",
+              "    client_thread.start()",
+              "",
+              "server_socket.close()"
+            ].join("\n")
+          },
+          client: {
+            filename: "client9.py",
+            code: [
+              "import socket",
+              "",
+              "client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)",
+              'server_address = ("127.0.0.1", 9002)',
+              "",
+              "client_socket.connect(server_address)",
+              "",
+              'filename = input("Enter the filename to request: ")',
+              "client_socket.send(filename.encode())",
+              "",
+              "response = client_socket.recv(4096)",
+              "response = response.decode()",
+              "",
+              'print("---------------------------------------------------")',
+              "print(response)",
+              'print("---------------------------------------------------")',
+              "",
+              "client_socket.close()"
+            ].join("\n")
+          }
+        }
+      }
+    ];
+
+    // =========================================================================
+    // 2. Common Lines Guide & Smart Auto-Chunker (Above/With while for Small Code)
+    // =========================================================================
+    const COMMON_FILE_INFO = {
+      "exp5:server": {
+        shared: ["import socket", "socket(AF_INET, SOCK_STREAM)", 'server_address = ("127.0.0.1", 8080)', "server_socket.bind(server_address)", "server_socket.listen(1)", "connection, client_address = server_socket.accept()", "while True:", "connection.close()", "server_socket.close()"],
+        unique: "import ast + ast.literal_eval(data) + is_diagonal / is_lower / is_upper matrix checks inside while True."
+      },
+      "exp5:client": {
+        shared: ["import socket", "socket(AF_INET, SOCK_STREAM)", 'server_address = ("127.0.0.1", 8080)', "client_socket.connect(server_address)", "while True:", "client_socket.send(...)", "if matrix == 'exit': break", "client_socket.recv(1024)", "client_socket.close()"],
+        unique: "Same TCP client while-loop skeleton as client7.py — just reads a matrix string and sends until 'exit'."
+      },
+      "exp6:server": {
+        shared: ["import socket", "socket(AF_INET, SOCK_DGRAM)", 'server_address = ("127.0.0.1", 8080)', "server_socket.bind(server_address)", "while True:", "data, client_address = server_socket.recvfrom(1024)", 'if sentence == "exit": break', "server_socket.sendto(..., client_address)", "server_socket.close()"],
+        unique: "abbreviations dict + def translate(sentence) helper called inside the UDP while loop."
+      },
+      "exp6:client": {
+        shared: ["import socket", "socket(AF_INET, SOCK_DGRAM)", 'server_address = ("127.0.0.1", 8080)', "while True:", "client_socket.sendto(Data.encode(), server_address)", "if Data == 'exit': break", "response, _ = client_socket.recvfrom(1024)", "client_socket.close()"],
+        unique: "Almost identical to client8.py (Exp 8) — only uses variable Data, port 8080, and exit keyword 'exit'."
+      },
+      "exp7:server": {
+        shared: ["import socket", "import threading", "socket(AF_INET, SOCK_STREAM)", 'server_address = ("127.0.0.1", 8080)', "server_socket.bind(server_address)", "server_socket.listen(5)", "while True: connection, client_address = server_socket.accept()", "threading.Thread(target=handle_client, ...).start()", "server_socket.close()"],
+        unique: "def handle_client(connection, client_address) with inner while True echoing received messages until 'exit'. Same threading skeleton as server9.py!"
+      },
+      "exp7:client": {
+        shared: ["import socket", "socket(AF_INET, SOCK_STREAM)", 'server_address = ("127.0.0.1", 8080)', "client_socket.connect(server_address)", "while True:", "client_socket.send(message.encode())", "if message == 'exit': break", "response = client_socket.recv(1024).decode()", "client_socket.close()"],
+        unique: "Same interactive while loop as client2.py & client8.py — TCP chat echo on port 8080."
+      },
+      "exp8:server": {
+        shared: ["import socket", "socket(AF_INET, SOCK_DGRAM)", 'server_address = ("127.0.0.1", 1234)', "server_socket.bind(server_address)", "while True:", "data, client_address = server_socket.recvfrom(1024)", "message = data.decode()", "server_socket.sendto(..., client_address)", "server_socket.close()"],
+        unique: 'import time + port 1234 + break word "stop" + time.localtime() & time.strftime("%Y-%m-%d %H:%M:%S", current_time).'
+      },
+      "exp8:client": {
+        shared: ["import socket", "socket(AF_INET, SOCK_DGRAM)", 'server_address = ("127.0.0.1", 1234)', "while True:", "client_socket.sendto(message.encode(), server_address)", "if message == 'stop': break", "response, _ = client_socket.recvfrom(1024)", "client_socket.close()"],
+        unique: "Almost identical to udpclient.py (Exp 6) — just port 1234 and stop word 'stop'."
+      },
+      "exp9:server": {
+        shared: ["import socket", "import threading", "socket(AF_INET, SOCK_STREAM)", 'server_address = ("127.0.0.1", 9002)', "server_socket.bind(server_address)", "server_socket.listen(5)", "while True: connection, client_address = server_socket.accept()", "threading.Thread(target=handle_client, ...).start()", "server_socket.close()"],
+        unique: "import os + def handle_client checking os.path.exists/isfile(filename), os.getpid(), and reading file or returning 'File not found'."
+      },
+      "exp9:client": {
+        shared: ["import socket", "socket(AF_INET, SOCK_STREAM)", 'server_address = ("127.0.0.1", 9002)', "client_socket.connect(server_address)", "client_socket.send(filename.encode())", "response = client_socket.recv(4096)", "client_socket.close()"],
+        unique: "Single filename request (no while loop) — connects on port 9002, sends filename, prints PID + file contents."
+      }
+    };
+
+    function getCommonLineNote(line) {
+      const t = line.trim();
+      if (!t) return null;
+      if (/^import\s+socket\b/.test(t)) return "Common in all 10 files (Exp 5–9)";
+      if (/^import\s+threading\b/.test(t)) return "Common in threaded TCP servers (Exp 7 & 9)";
+      if (/socket\.socket\s*\(/.test(t)) {
+        return /SOCK_DGRAM/.test(t)
+          ? "Common UDP socket creation (Exp 6 & 8)"
+          : "Common TCP socket creation (Exp 5, 7, 9)";
+      }
+      if (/^(?:server_address|addr)\s*=/.test(t)) return "Common localhost + port tuple in all 10 files";
+      if (/\.bind\s*\(/.test(t)) return "Common bind() in all 5 servers (Exp 5–9)";
+      if (/\.listen\s*\(/.test(t)) return "Common listen() in all TCP servers (Exp 5, 7, 9)";
+      if (/\.connect\s*\(/.test(t)) return "Common connect() in all TCP clients (Exp 5, 7, 9)";
+      if (/=\s*(?:server_socket|s)\.accept\s*\(\s*\)/.test(t)) return "Common accept() in all TCP servers (Exp 5, 7, 9)";
+      if (/^while\s+True\s*:/.test(t)) return "Common while True loop pattern (Exp 5–9)";
+      if (/=\s*(?:server_socket|client_socket|s)\.recvfrom\s*\(/.test(t)) return "Common UDP recvfrom(1024) in Exp 6 & 8";
+      if (/=\s*(?:connection|client_socket|s)\.recv\s*\(/.test(t)) return "Common TCP recv() in Exp 5, 7, 9";
+      if (/^(?:data|message|response)\s*=\s*(?:data|response)\.decode\s*\(\s*\)/.test(t)) return "Common .decode() step across Exp 5–9";
+      if (/^if\s+(?:not\s+\w+\s+or\s+)?\w+\s*==\s*["'](?:exit|stop)["']\s*:/.test(t)) return "Common loop exit check (Exp 5–8)";
+      if (/^break$/.test(t)) return "Common loop break (Exp 5–8)";
+      if (/threading\.Thread\s*\(/.test(t)) return "Common thread launcher (Exp 7 & 9)";
+      if (/\.sendto\s*\(/.test(t)) return "Common UDP sendto() (Exp 6 & 8)";
+      if (/\.(?:send)\s*\(/.test(t)) return "Common TCP send() (Exp 5, 7, 9)";
+      if (/^(?:server_socket|client_socket|connection|s|conn)\.close\s*\(\s*\)/.test(t)) return "Common cleanup close() in all 10 files";
+      return null;
+    }
+
+    const SECTION_META = {
+      above_while: { key: "above_while", badge: "1)", short: "Above while", label: "1) Above while (Setup & Connection)", cls: "sec-setup" },
+      with_while: { key: "with_while", badge: "2)", short: "With while", label: "2) With while (Loop & Cleanup)", cls: "sec-transfer" },
+      small_top: { key: "small_top", badge: "1)", short: "Setup & Connect", label: "1) Setup & Connection", cls: "sec-setup" },
+      small_bottom: { key: "small_bottom", badge: "2)", short: "Transfer & Close", label: "2) Data Transfer & Cleanup", cls: "sec-transfer" },
+      imports: { key: "imports", badge: "a)", short: "Imports", label: "a) Imports / Includes", cls: "sec-imports" },
+      handler: { key: "handler", badge: "fn)", short: "Handler / Helper", label: "Helper / Handler Function", cls: "sec-connection" },
+      setup: { key: "setup", badge: "b)", short: "Socket Setup", label: "b) Socket / Variable Setup", cls: "sec-setup" },
+      connection: { key: "connection", badge: "c)", short: "Connection Setup", label: "c) Connection Setup", cls: "sec-connection" },
+      transfer: { key: "transfer", badge: "d)", short: "Data Transfer", label: "d) Data Transfer", cls: "sec-transfer" },
+      cleanup: { key: "cleanup", badge: "e)", short: "Cleanup", label: "e) Cleanup", cls: "sec-cleanup" }
+    };
+
+    function updateBracketDepth(line, depth) {
+      let inSingle = false, inDouble = false, escaped = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (escaped) { escaped = false; continue; }
+        if (ch === "\\" && (inSingle || inDouble)) { escaped = true; continue; }
+        if (!inDouble && ch === "'") { inSingle = !inSingle; continue; }
+        if (!inSingle && ch === '"') { inDouble = !inDouble; continue; }
+        if (inSingle || inDouble) continue;
+        if (ch === "#") break;
+        if (ch === "(" || ch === "[" || ch === "{") depth++;
+        else if (ch === ")" || ch === "]" || ch === "}") depth = Math.max(0, depth - 1);
+      }
+      return depth;
+    }
+
+    function splitIntoTopBlocks(code) {
+      const lines = code.replace(/\r\n/g, "\n").split("\n");
+      const blocks = [];
+      let current = [];
+      let depth = 0;
+
+      const flush = () => {
+        while (current.length && current[current.length - 1].trim() === "") current.pop();
+        if (current.length) blocks.push(current.join("\n"));
+        current = [];
+      };
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (depth > 0) {
+          current.push(line);
+          depth = updateBracketDepth(line, depth);
+          continue;
+        }
+
+        if (trimmed === "") {
+          // Keep blank line inside block if next non-empty line is indented
+          let nextNonEmpty = "";
+          for (let j = i + 1; j < lines.length; j++) {
+            if (lines[j].trim() !== "") { nextNonEmpty = lines[j]; break; }
+          }
+          if (current.length && /^[ \t]+/.test(nextNonEmpty)) {
+            current.push(line);
+          } else {
+            flush();
+          }
+          continue;
+        }
+
+        const isIndented = /^[ \t]+/.test(line);
+        const isContinuationKeyword = /^(elif\b|else\s*:|except\b|finally\s*:)/.test(trimmed);
+
+        if (current.length === 0) {
+          current.push(line);
+        } else if (isIndented || isContinuationKeyword) {
+          current.push(line);
+        } else {
+          // New top-level line: flush previous block so each top-level stmt can be classified accurately
+          flush();
+          current.push(line);
+        }
+
+        depth = updateBracketDepth(line, depth);
+      }
+      flush();
+      return blocks;
+    }
+
+    function classifyBlock(block, stateFlags) {
+      const stripped = block.trim();
+      // Rule a: Imports / Includes
+      if (/^(import\s+|from\s+\S+\s+import\s+|#include\s*[<"]|using\s+namespace\b)/m.test(stripped) &&
+        !/\b(socket\s*\(|bind\s*\(|listen\s*\(|accept\s*\(|connect\s*\(|send|recv|close\s*\()/.test(stripped)) {
+        return "imports";
+      }
+
+      // Rule e: Cleanup (top-level close/shutdown without loop/def)
+      const isControlBlock = /^(def\s+|while\s+|for\s+|if\s+|int\s+main\b)/.test(stripped);
+      if (!isControlBlock &&
+        /(\.\s*(close|shutdown)\s*\(|\bclosesocket\s*\(|\bclose\s*\()/.test(stripped) &&
+        !/\b(send|sendto|recv|recvfrom|bind|listen|accept|connect)\b/.test(stripped)) {
+        return "cleanup";
+      }
+
+      // Keep post-cleanup prints in cleanup
+      if (stateFlags.seenCleanup && /^print\s*\(/.test(stripped)) {
+        return "cleanup";
+      }
+
+      // Rule b: Socket / Address / Setup variables (always setup even if a def appeared above)
+      if (/^abbreviations\s*=/.test(stripped) && stateFlags.seenConnection) {
+        return "handler";
+      }
+      if (/\bsocket\.socket\b|\bsocket\s*\(|^(?:server_address|addr)\s*=|\b(struct\s+sockaddr|AF_INET|SOCK_STREAM|SOCK_DGRAM)\b/m.test(stripped)) {
+        return "setup";
+      }
+
+      // Handler / Helper function (def ...)
+      if (/^def\s+\w+/.test(stripped)) {
+        return "handler";
+      }
+
+      // Rule c: Connection Setup (bind / listen / accept / connect, or accept while-loop in threaded servers)
+      if (!/^while\b/.test(stripped) && /\.(bind|listen|accept|connect)\s*\(|\b(bind|listen|accept|connect)\s*\(/.test(stripped)) {
+        return "connection";
+      }
+      if (/^while\b/.test(stripped) && /\.accept\s*\(/.test(stripped) && !/\.(send|sendto|recv|recvfrom)\s*\(/.test(stripped)) {
+        return "connection";
+      }
+
+      // Rule d: Data Transfer (while loops, send/recv/input, or anything after connection)
+      if (/^while\b/.test(stripped) || /\.(send|sendto|recv|recvfrom)\s*\(|\b(send|sendto|recv|recvfrom|input)\s*\(/.test(stripped)) {
+        return "transfer";
+      }
+
+      // Keep status banner print() inside connection setup before data transfer begins
+      if (/^print\s*\(/.test(stripped) && stateFlags.prevCategory === "connection" && !stateFlags.seenTransfer) {
+        return "connection";
+      }
+
+      if (stateFlags.seenConnection || stateFlags.seenTransfer) {
+        return "transfer";
+      }
+
+      return stateFlags.prevCategory || "setup";
+    }
+
+    function isTopLevelWhileBlock(block) {
+      return /^while(?:\s+|\s*\()/m.test(block.trimStart());
+    }
+
+    function smartChunkCode(code, splitMode = "auto") {
+      const normalized = code.replace(/\r\n/g, "\n").trim();
+      if (!normalized) return [];
+
+      const blocks = splitIntoTopBlocks(normalized);
+      const nonEmptyCount = normalized.split("\n").filter(l => l.trim().length > 0).length;
+      const whileIdx = blocks.findIndex(isTopLevelWhileBlock);
+      const isSmall = nonEmptyCount <= 24;
+
+      // Small code (or forced 2-part mode): split into Above `while` and With `while` (or 2 balanced halves if no `while`)
+      if (blocks.length >= 2 && (splitMode === "while-split" || (splitMode === "auto" && isSmall))) {
+        if (whileIdx > 0) {
+          return [
+            {
+              index: 0,
+              category: "above_while",
+              meta: SECTION_META.above_while,
+              code: blocks.slice(0, whileIdx).join("\n")
+            },
+            {
+              index: 1,
+              category: "with_while",
+              meta: SECTION_META.with_while,
+              code: blocks.slice(whileIdx).join("\n")
+            }
+          ];
+        }
+
+        // No top-level while loop: split cleanly into Setup/Connection vs Transfer/Cleanup
+        const flags = { prevCategory: null, seenConnection: false, seenTransfer: false, seenCleanup: false };
+        let splitIdx = -1;
+        for (let i = 0; i < blocks.length; i++) {
+          const cat = classifyBlock(blocks[i], flags);
+          if (cat === "connection") flags.seenConnection = true;
+          if (cat === "transfer") flags.seenTransfer = true;
+          if (cat === "cleanup") flags.seenCleanup = true;
+          if (splitIdx === -1 && (cat === "transfer" || cat === "cleanup") && i > 0) {
+            splitIdx = i;
+          }
+          flags.prevCategory = cat;
+        }
+        if (splitIdx <= 0 || splitIdx >= blocks.length) {
+          splitIdx = Math.ceil(blocks.length / 2);
+        }
+        return [
+          {
+            index: 0,
+            category: "small_top",
+            meta: SECTION_META.small_top,
+            code: blocks.slice(0, splitIdx).join("\n")
+          },
+          {
+            index: 1,
+            category: "small_bottom",
+            meta: SECTION_META.small_bottom,
+            code: blocks.slice(splitIdx).join("\n")
+          }
+        ];
+      }
+
+      // Detailed multi-section classification for larger scripts
+      const classified = [];
+      const flags = { prevCategory: null, seenConnection: false, seenTransfer: false, seenCleanup: false };
+
+      for (const block of blocks) {
+        const cat = classifyBlock(block, flags);
+        if (cat === "connection") flags.seenConnection = true;
+        if (cat === "transfer") flags.seenTransfer = true;
+        if (cat === "cleanup") flags.seenCleanup = true;
+        if (classified.length && classified[classified.length - 1].category === cat) {
+          classified[classified.length - 1].code += "\n" + block;
+        } else {
+          classified.push({ category: cat, meta: SECTION_META[cat], code: block });
+        }
+        flags.prevCategory = cat;
+      }
+
+      return classified.map((c, idx) => ({
+        index: idx,
+        category: c.category,
+        meta: c.meta,
+        code: c.code
+      }));
+    }
+
+    // =========================================================================
+    // 2B. Flexible Symbol Spacing Tokenizer (Ignores spaces around `,`, `=`, etc.)
+    // =========================================================================
+    const PYTHON_TOKEN_REGEX = /(?:rf|fr|rb|br|[fFrRbBuU])?(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|[ \t]+|[A-Za-z_]\w*|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\.\d+|==|!=|<=|>=|\+=|-=|\*=|\/=|\/\/|\*\*|<<|>>|->|./g;
+    const MULTI_OP_REGEX = /^(?:==|!=|<=|>=|\+=|-=|\*=|\/=|\/\/|\*\*|<<|>>|->)$/;
+
+    function tokenizeCodeBody(body) {
+      const raw = body.match(PYTHON_TOKEN_REGEX) || [];
+      const tokens = raw.map(text => {
+        const isWs = /^[ \t]+$/.test(text);
+        const qIdx = isWs ? -1 : text.search(/["']/);
+        const isStr = !isWs && qIdx >= 0 && text.length >= qIdx + 2 && text[text.length - 1] === text[qIdx];
+        const isWord = !isWs && !isStr && (/^[A-Za-z_]\w*$/.test(text) || /^\d/.test(text) || /^\.\d+$/.test(text));
+        const isSym = !isWs && !isStr && !isWord;
+        return { text, isWs, isStr, isWord, isSym, isOpt: false };
+      });
+
+      for (let i = 0; i < tokens.length; i++) {
+        if (!tokens[i].isWs) continue;
+        const prev = i > 0 ? tokens[i - 1] : null;
+        const next = i + 1 < tokens.length ? tokens[i + 1] : null;
+        // Space is required only between two word/number tokens (e.g. `import socket`, `for i in`).
+        // Space before or after `,`, `=`, or any symbol/quote outside string literals is optional.
+        if (prev && next && !(prev.isWord && next.isWord)) {
+          const wouldFuseOperator = prev.isSym && next.isSym && MULTI_OP_REGEX.test(prev.text + next.text);
+          if (!wouldFuseOperator) {
+            tokens[i].isOpt = true;
+          }
+        }
+      }
+      return tokens;
+    }
+
+    function getLineCharInfo(line) {
+      const indentLen = (line.match(/^[ \t]*/) || [""])[0].length;
+      const isOptSpace = new Array(line.length).fill(false);
+      const allowOptSpaceBefore = new Array(line.length).fill(false);
+
+      const body = line.slice(indentLen).trimEnd();
+      const tokens = tokenizeCodeBody(body);
+
+      let pos = indentLen;
+      let prevNonWs = null;
+      for (const tok of tokens) {
+        if (tok.isWs) {
+          if (tok.isOpt) {
+            for (let k = 0; k < tok.text.length; k++) {
+              isOptSpace[pos + k] = true;
+            }
+          }
+        } else {
+          if (prevNonWs && (!tok.isWord || !prevNonWs.isWord)) {
+            const wouldFuseOperator = prevNonWs.isSym && tok.isSym && MULTI_OP_REGEX.test(prevNonWs.text + tok.text);
+            if (!wouldFuseOperator) {
+              allowOptSpaceBefore[pos] = true;
+            }
+          }
+          prevNonWs = tok;
+        }
+        pos += tok.text.length;
+      }
+
+      return { indentLen, isOptSpace, allowOptSpaceBefore };
+    }
+
+    function normalizeLineSpaces(line) {
+      if (!line || !line.trim()) return "";
+      const leadingMatch = line.match(/^[ \t]*/);
+      const leading = leadingMatch ? leadingMatch[0] : "";
+      const body = line.slice(leading.length).replace(/ +$/, "");
+      const tokens = tokenizeCodeBody(body);
+      return leading + tokens.filter(t => !t.isOpt).map(t => t.text).join("\u0001");
+    }
+
+    function isCodeMatched(typed, target, ignoreBlankLines = false) {
+      let tLines = (target || "").replace(/\r\n/g, "\n").split("\n");
+      let uLines = (typed || "").replace(/\r\n/g, "\n").split("\n");
+      if (ignoreBlankLines) {
+        tLines = tLines.filter(l => l.trim().length > 0);
+        uLines = uLines.filter(l => l.trim().length > 0);
+      }
+      if (tLines.length !== uLines.length) return false;
+      for (let i = 0; i < tLines.length; i++) {
+        if (normalizeLineSpaces(tLines[i]) !== normalizeLineSpaces(uLines[i])) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // =========================================================================
+    // 3. Application State & Persistence
+    // =========================================================================
+    const STORAGE_KEY = "cn_code_memorizer_v3";
+
+    function loadSavedProgress() {
+      try {
+        const v3 = localStorage.getItem(STORAGE_KEY);
+        if (v3) return JSON.parse(v3);
+        // Preserve File Mastery stars from v2/v1 without bringing stale chunk indices
+        const prevRaw = localStorage.getItem("cn_code_memorizer_v2") || localStorage.getItem("cn_code_memorizer_v1");
+        if (prevRaw) {
+          const prev = JSON.parse(prevRaw);
+          const migrated = {};
+          for (const [k, rec] of Object.entries(prev)) {
+            if (rec && rec.masteryPassed) {
+              migrated[k] = { learnedChunks: [], testedChunks: [], masteryPassed: true };
+            }
+          }
+          return migrated;
+        }
+        return {};
+      } catch {
+        return {};
+      }
+    }
+
+    let state = {
+      expId: EXPERIMENTS[0].id,
+      role: "server", // "server" | "client" | "custom"
+      customEntry: null,
+      mode: "learn", // "learn" | "test" | "mastery"
+      splitMode: "auto", // "auto" | "while-split" | "sections"
+      chunkIndex: 0,
+      freeNav: false,
+      showSpaceDots: true,
+      showCommonTags: true,
+      strictBlankLines: false,
+      learnedText: "",
+      progress: loadSavedProgress() // { "exp5:server": { learnedChunks: [], testedChunks: [], masteryPassed: false } }
+    };
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
+      } catch { }
+    }
+
+    function getFileKey() {
+      if (state.expId === "custom") return "custom:single";
+      return `${state.expId}:${state.role}`;
+    }
+
+    function getFileRecord(key = getFileKey()) {
+      if (!state.progress[key]) {
+        state.progress[key] = { learnedChunks: [], testedChunks: [], masteryPassed: false };
+      }
+      return state.progress[key];
+    }
+
+    function getCurrentExperiment() {
+      if (state.expId === "custom" && state.customEntry) return state.customEntry;
+      return EXPERIMENTS.find(e => e.id === state.expId) || EXPERIMENTS[0];
+    }
+
+    function getCurrentFile() {
+      const exp = getCurrentExperiment();
+      if (exp.id === "custom") return exp.files.server;
+      return exp.files[state.role] || exp.files.server;
+    }
+
+    function getCurrentChunks() {
+      return smartChunkCode(getCurrentFile().code, state.splitMode);
+    }
+
+    function getTargetText() {
+      const chunks = getCurrentChunks();
+      if (state.mode === "mastery") {
+        return getCurrentFile().code.trim();
+      }
+      const chunk = chunks[state.chunkIndex] || chunks[0];
+      return chunk ? chunk.code : "";
+    }
+
+    function isChunkUnlocked(idx) {
+      if (state.freeNav || idx === 0) return true;
+      const rec = getFileRecord();
+      const prevIdx = idx - 1;
+      return rec.learnedChunks.includes(prevIdx) || rec.testedChunks.includes(prevIdx);
+    }
+
+    function isMasteryUnlocked() {
+      if (state.freeNav) return true;
+      const chunks = getCurrentChunks();
+      const rec = getFileRecord();
+      return chunks.every((_, idx) => rec.learnedChunks.includes(idx) || rec.testedChunks.includes(idx));
+    }
+
+    // =========================================================================
+    // 4. DOM References & Utilities
+    // =========================================================================
+    const el = {
+      expSelect: document.getElementById("expSelect"),
+      protoBadge: document.getElementById("protoBadge"),
+      btnRoleServer: document.getElementById("btnRoleServer"),
+      btnRoleClient: document.getElementById("btnRoleClient"),
+      roleSwitcher: document.getElementById("roleSwitcher"),
+      modeSwitcher: document.getElementById("modeSwitcher"),
+      aimFileLabel: document.getElementById("aimFileLabel"),
+      aimText: document.getElementById("aimText"),
+      chunkCountSummary: document.getElementById("chunkCountSummary"),
+      commonStrip: document.getElementById("commonStrip"),
+      commonSharedChips: document.getElementById("commonSharedChips"),
+      commonUniqueNote: document.getElementById("commonUniqueNote"),
+      btnCommonToggle: document.getElementById("btnCommonToggle"),
+      commonDrawer: document.getElementById("commonDrawer"),
+      btnCloseCommon: document.getElementById("btnCloseCommon"),
+      overallMastered: document.getElementById("overallMastered"),
+      btnRefToggle: document.getElementById("btnRefToggle"),
+      refDrawer: document.getElementById("refDrawer"),
+      refTitle: document.getElementById("refTitle"),
+      refCodePre: document.getElementById("refCodePre"),
+      btnCloseRef: document.getElementById("btnCloseRef"),
+      stepperTrack: document.getElementById("stepperTrack"),
+      progressionHint: document.getElementById("progressionHint"),
+      splitModeSelect: document.getElementById("splitModeSelect"),
+      chkFreeNav: document.getElementById("chkFreeNav"),
+      activeSecTag: document.getElementById("activeSecTag"),
+      activeChunkTitle: document.getElementById("activeChunkTitle"),
+      statAcc: document.getElementById("statAcc"),
+      statErr: document.getElementById("statErr"),
+      statProg: document.getElementById("statProg"),
+      learnView: document.getElementById("learnView"),
+      learnCanvasWrap: document.getElementById("learnCanvasWrap"),
+      learnTargetInfo: document.getElementById("learnTargetInfo"),
+      learnGutter: document.getElementById("learnGutter"),
+      learnMetrics: document.getElementById("learnMetrics"),
+      learnInput: document.getElementById("learnInput"),
+      learnLines: document.getElementById("learnLines"),
+      learnFeedback: document.getElementById("learnFeedback"),
+      learnMsg: document.getElementById("learnMsg"),
+      learnNextActions: document.getElementById("learnNextActions"),
+      chkCommonTags: document.getElementById("chkCommonTags"),
+      chkShowSpaces: document.getElementById("chkShowSpaces"),
+      btnLearnReset: document.getElementById("btnLearnReset"),
+      testView: document.getElementById("testView"),
+      testInstruction: document.getElementById("testInstruction"),
+      wrapStrictBlank: document.getElementById("wrapStrictBlank"),
+      chkStrictBlank: document.getElementById("chkStrictBlank"),
+      masterySectionChecklist: document.getElementById("masterySectionChecklist"),
+      testGutter: document.getElementById("testGutter"),
+      testInput: document.getElementById("testInput"),
+      peekBox: document.getElementById("peekBox"),
+      btnPeek: document.getElementById("btnPeek"),
+      btnTestClear: document.getElementById("btnTestClear"),
+      editorMetrics: document.getElementById("editorMetrics"),
+      btnBackToLearn: document.getElementById("btnBackToLearn"),
+      btnVerify: document.getElementById("btnVerify"),
+      reportContainer: document.getElementById("reportContainer"),
+      btnCustomModal: document.getElementById("btnCustomModal"),
+      customModal: document.getElementById("customModal"),
+      btnCloseModal: document.getElementById("btnCloseModal"),
+      btnCancelCustom: document.getElementById("btnCancelCustom"),
+      btnLoadCustom: document.getElementById("btnLoadCustom"),
+      customCodeArea: document.getElementById("customCodeArea"),
+      btnResetProgress: document.getElementById("btnResetProgress"),
+      toast: document.getElementById("toast")
+    };
+
+    let toastTimer = null;
+    function showToast(msg) {
+      el.toast.textContent = msg;
+      el.toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.toast.classList.remove("show"), 2300);
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function escapeHtmlAttr(s) {
+      return escapeHtml(s).replace(/"/g, "&quot;");
+    }
+
+    function renderVisibleSpaces(str, showDots) {
+      if (!showDots) return escapeHtml(str);
+      return escapeHtml(str).replace(/ /g, "·");
+    }
+
+    // =========================================================================
+    // 5. Learn Mode Engine (Line-aligned Validation + Flexible Symbol Spacing)
+    // =========================================================================
+    function analyzeLearnInput(target, typed) {
+      const targetLines = target.split("\n");
+      const typedLines = typed.split("\n");
+
+      // Map textarea selectionStart to (cursorLine, cursorCol)
+      const selPos = el.learnInput.selectionStart || 0;
+      const beforeCursor = typed.slice(0, selPos);
+      const cursorParts = beforeCursor.split("\n");
+      const cursorLine = cursorParts.length - 1;
+      const cursorCol = cursorParts[cursorParts.length - 1].length;
+
+      let totalChars = target.length;
+      let matchedChars = 0;
+      let typedCorrectCount = 0;
+      let typedValidCount = 0;
+      let errorCount = 0;
+      let indentErrors = 0;
+      let firstError = null;
+
+      const lineHtmls = [];
+
+      for (let li = 0; li < targetLines.length; li++) {
+        const tLine = targetLines[li];
+        const uLine = li < typedLines.length ? typedLines[li] : null;
+        const isCurrentLine = li === cursorLine;
+        const hasLineStarted = uLine !== null;
+        const tInfo = getLineCharInfo(tLine);
+        const uIndentLen = hasLineStarted ? (uLine.match(/^[ \t]*/) || [""])[0].length : 0;
+
+        const tStates = new Array(tLine.length).fill("ghost");
+        const tBadShown = new Array(tLine.length).fill(null);
+
+        let ti = 0;
+        let ui = 0;
+        let lineErrors = 0;
+        let mappedCursorTi = null;
+
+        if (hasLineStarted) {
+          while (ti < tLine.length && ui < uLine.length) {
+            if (isCurrentLine && mappedCursorTi === null && ui === cursorCol) {
+              mappedCursorTi = ti;
+            }
+            const tCh = tLine[ti];
+            const uCh = uLine[ui];
+
+            if (tCh === uCh) {
+              tStates[ti] = "ok";
+              matchedChars++;
+              typedCorrectCount++;
+              typedValidCount++;
+              ti++;
+              ui++;
+            } else if (tInfo.isOptSpace[ti]) {
+              tStates[ti] = "opt-skip";
+              matchedChars++;
+              ti++;
+            } else if (ui >= uIndentLen && uCh === " " && tInfo.allowOptSpaceBefore[ti]) {
+              let la = ui;
+              while (la < uLine.length && uLine[la] === " ") la++;
+              if (isCurrentLine && cursorCol >= ui && cursorCol < la) {
+                mappedCursorTi = ti;
+              }
+              if (la === uLine.length && isCurrentLine && li === typedLines.length - 1) {
+                break; // Waiting on user finishing optional space before symbol/word
+              }
+              ui = la;
+            } else {
+              tStates[ti] = "bad";
+              tBadShown[ti] = uCh;
+              lineErrors++;
+              errorCount++;
+              typedValidCount++;
+              if (ti < tInfo.indentLen || ui < uIndentLen) indentErrors++;
+              if (!firstError) {
+                const expLabel = tCh === " " ? "SPACE" : (tCh === "\t" ? "TAB" : `'${tCh}'`);
+                const gotLabel = uCh === " " ? "SPACE" : (uCh === "\t" ? "TAB" : `'${uCh}'`);
+                firstError = `Line ${li + 1}, Col ${ui + 1}: expected ${expLabel}, typed ${gotLabel}`;
+              }
+              ti++;
+              ui++;
+            }
+          }
+
+          if (isCurrentLine && mappedCursorTi === null) {
+            mappedCursorTi = ti;
+          }
+
+          // Mark remaining target characters as missing if user already moved past this line
+          if (ti < tLine.length && li < typedLines.length - 1) {
+            for (let k = ti; k < tLine.length; k++) {
+              if (tInfo.isOptSpace[k] && k === tLine.length - 1) {
+                tStates[k] = "opt-skip";
+                continue;
+              }
+              tStates[k] = "missing";
+              lineErrors++;
+              errorCount++;
+              if (k < tInfo.indentLen) indentErrors++;
+              if (!firstError) {
+                firstError = `Line ${li + 1}, Col ${k + 1}: missing ${tLine[k] === " " ? "SPACE" : `'${tLine[k]}'`}`;
+              }
+            }
+          }
+        }
+
+        let contentHtml = "";
+        for (let ci = 0; ci < tLine.length; ci++) {
+          const tCh = tLine[ci];
+          const isCursorHere = isCurrentLine && ci === mappedCursorTi;
+          const displayTarget = tCh === " " && state.showSpaceDots ? "·" : escapeHtml(tCh);
+          const st = tStates[ci];
+
+          if (st === "ok" || st === "opt-skip") {
+            const okCls = (tCh === " " ? "ch-space-ok" : "ch-ok") + (isCursorHere ? " ch-cursor" : "");
+            contentHtml += `<span class="ch ${okCls}">${displayTarget}</span>`;
+          } else if (st === "bad") {
+            const uCh = tBadShown[ci];
+            const shown = uCh === " " ? "·" : (uCh === "\t" ? "⇥" : escapeHtml(uCh));
+            const badCls = "ch-bad" + (isCursorHere ? " ch-cursor" : "");
+            contentHtml += `<span class="ch ${badCls}" title="Expected: ${escapeHtmlAttr(tCh)}">${shown}</span>`;
+          } else if (st === "missing") {
+            contentHtml += `<span class="ch ch-missing">${displayTarget}</span>`;
+          } else {
+            const cls = (tCh === " " ? "ch-ghost-space" : "ch-ghost") + (isCursorHere ? " ch-cursor" : "");
+            contentHtml += `<span class="ch ${cls}">${displayTarget}</span>`;
+          }
+        }
+
+        // Extra non-whitespace chars typed beyond target line
+        let hasExtraNonSpace = false;
+        if (hasLineStarted && ui < uLine.length) {
+          const leftover = uLine.slice(ui);
+          if (!/^ +$/.test(leftover)) {
+            hasExtraNonSpace = true;
+            for (let ci = ui; ci < uLine.length; ci++) {
+              const uCh = uLine[ci];
+              const isCursorHere = isCurrentLine && ci === cursorCol;
+              lineErrors++;
+              errorCount++;
+              typedValidCount++;
+              if (ci < uIndentLen) indentErrors++;
+              if (!firstError) {
+                firstError = `Line ${li + 1}, Col ${ci + 1}: extra ${uCh === " " ? "SPACE" : (uCh === "\t" ? "TAB" : `'${uCh}'`)}`;
+              }
+              const shown = uCh === " " ? "·" : (uCh === "\t" ? "⇥" : escapeHtml(uCh));
+              contentHtml += `<span class="ch ch-extra${isCursorHere ? " ch-cursor" : ""}">${shown}</span>`;
+            }
+          }
+        }
+
+        // Cursor at end of line
+        if (isCurrentLine && mappedCursorTi !== null && mappedCursorTi >= tLine.length && (!hasExtraNonSpace || cursorCol >= (uLine ? uLine.length : 0))) {
+          contentHtml += `<span class="cursor-eol"></span>`;
+        }
+
+        // Count matched newlines between lines
+        if (li < targetLines.length - 1 && li < typedLines.length - 1) {
+          matchedChars++;
+          typedCorrectCount++;
+          typedValidCount++;
+        }
+
+        const lineCompleteExact = hasLineStarted &&
+          lineErrors === 0 &&
+          normalizeLineSpaces(uLine) === normalizeLineSpaces(tLine) &&
+          (li < typedLines.length - 1 || li === targetLines.length - 1);
+
+        const statusIcon = lineErrors > 0
+          ? '<span class="txt-bad">✗</span>'
+          : lineCompleteExact
+            ? '<span class="txt-ok">✓</span>'
+            : "";
+
+        const commonNote = state.showCommonTags ? getCommonLineNote(tLine) : null;
+        const commonBadge = commonNote
+          ? `<span class="line-common-tag" title="${escapeHtmlAttr(commonNote)}">common</span>`
+          : "";
+
+        lineHtmls.push(
+          `<div class="code-line${isCurrentLine ? " current-line" : ""}">` +
+          `<span class="line-num">${li + 1}</span>` +
+          `<span class="line-content">${contentHtml || "&nbsp;"}</span>` +
+          `${commonBadge}` +
+          `<span class="line-status">${statusIcon}</span>` +
+          `</div>`
+        );
+      }
+
+      // Extra trailing lines typed beyond target
+      if (typedLines.length > targetLines.length) {
+        for (let li = targetLines.length; li < typedLines.length; li++) {
+          const extraText = typedLines[li];
+          const extraLen = Math.max(1, extraText.length);
+          errorCount += extraLen;
+          typedValidCount += extraLen;
+          if (!firstError) firstError = `Extra line ${li + 1} (remove extra newline)`;
+          lineHtmls.push(
+            `<div class="code-line${li === cursorLine ? " current-line" : ""}">` +
+            `<span class="line-num">${li + 1}</span>` +
+            `<span class="line-content"><span class="ch ch-extra">${escapeHtml(extraText || "↵")}</span></span>` +
+            `<span class="line-status txt-bad">✗</span>` +
+            `</div>`
+          );
+        }
+      }
+
+      const isExactMatch = isCodeMatched(typed, target, false) && errorCount === 0;
+      const denom = Math.max(1, typedValidCount);
+      const maxAcc = errorCount > 0 ? 99 : 100;
+      const accuracy = isExactMatch
+        ? 100
+        : (typed.length === 0 ? 100 : Math.min(maxAcc, Math.max(0, Math.round((typedCorrectCount / denom) * 100))));
+      const progress = isExactMatch
+        ? 100
+        : (totalChars === 0 ? 100 : Math.min(100, Math.round((matchedChars / totalChars) * 100)));
+
+      return {
+        html: lineHtmls.join(""),
+        isExactMatch,
+        errorCount,
+        indentErrors,
+        accuracy,
+        progress,
+        firstError
+      };
+    }
+
+    function syncEditorGutter(textarea, gutterEl, metricsEl) {
+      const val = textarea.value;
+      const lines = val.split("\n").length;
+      const targetLines = getTargetText().split("\n").length;
+      const numRows = Math.max(lines, 1);
+      let g = "";
+      for (let i = 1; i <= numRows; i++) g += i + "\n";
+      gutterEl.textContent = g.trimEnd();
+      gutterEl.scrollTop = textarea.scrollTop;
+      metricsEl.textContent = `Lines: ${lines} / ${targetLines} · Chars: ${val.length}`;
+    }
+
+    function updateLearnGutter() {
+      syncEditorGutter(el.learnInput, el.learnGutter, el.learnMetrics);
+    }
+
+    function renderLearnView() {
+      const target = getTargetText();
+      const targetLineCount = target ? target.split("\n").length : 0;
+      el.learnTargetInfo.textContent = `${targetLineCount} line${targetLineCount === 1 ? "" : "s"} · ${target.length} chars`;
+      updateLearnGutter();
+
+      const res = analyzeLearnInput(target, state.learnedText);
+
+      el.learnLines.innerHTML = res.html;
+      if (typeof el.learnLines.querySelector === "function") {
+        const curLineEl = el.learnLines.querySelector(".code-line.current-line");
+        if (curLineEl && el.learnCanvasWrap.scrollHeight > el.learnCanvasWrap.clientHeight) {
+          const top = curLineEl.offsetTop;
+          const bottom = top + curLineEl.offsetHeight;
+          const viewTop = el.learnCanvasWrap.scrollTop;
+          const viewBottom = viewTop + el.learnCanvasWrap.clientHeight;
+          if (top < viewTop + 28) {
+            el.learnCanvasWrap.scrollTop = Math.max(0, top - 28);
+          } else if (bottom > viewBottom - 28) {
+            el.learnCanvasWrap.scrollTop = bottom - el.learnCanvasWrap.clientHeight + 28;
+          }
+        }
+      }
+      el.statAcc.textContent = `${res.accuracy}%`;
+      el.statAcc.className = "stat-val " + (res.accuracy === 100 ? "good" : "bad");
+      el.statErr.textContent = String(res.errorCount);
+      el.statErr.className = "stat-val " + (res.errorCount === 0 ? "good" : "bad");
+      el.statProg.textContent = `${res.progress}%`;
+      el.statProg.className = "stat-val " + (res.progress === 100 ? "good" : "");
+
+      el.learnNextActions.innerHTML = "";
+      el.learnFeedback.className = "learn-feedback";
+
+      if (res.isExactMatch) {
+        const rec = getFileRecord();
+        if (!rec.learnedChunks.includes(state.chunkIndex)) {
+          rec.learnedChunks.push(state.chunkIndex);
+          saveProgress();
+          renderStepper();
+        }
+        el.learnFeedback.classList.add("complete");
+        el.learnMsg.textContent = "✓ 100% Matched (indentation strict, symbol spacing flexible)! Press Enter to continue.";
+
+        const btnTest = document.createElement("button");
+        btnTest.type = "button";
+        btnTest.className = "btn btn-primary";
+        btnTest.textContent = "Test from Memory →";
+        btnTest.onclick = () => switchMode("test");
+
+        const chunks = getCurrentChunks();
+        el.learnNextActions.appendChild(btnTest);
+
+        if (state.chunkIndex < chunks.length - 1) {
+          const btnNext = document.createElement("button");
+          btnNext.type = "button";
+          btnNext.className = "btn btn-success";
+          btnNext.textContent = "Next Chunk (Enter) →";
+          btnNext.onclick = () => selectChunk(state.chunkIndex + 1);
+          el.learnNextActions.appendChild(btnNext);
+        } else {
+          const btnMaster = document.createElement("button");
+          btnMaster.type = "button";
+          btnMaster.className = "btn btn-success";
+          btnMaster.textContent = "Final Mastery Mode ★";
+          btnMaster.onclick = () => switchMode("mastery");
+          el.learnNextActions.appendChild(btnMaster);
+        }
+      } else if (res.errorCount > 0) {
+        el.learnFeedback.classList.add("has-error");
+        const indentNote = res.indentErrors > 0 ? ` (${res.indentErrors} indentation)` : "";
+        el.learnMsg.textContent = `✗ ${res.errorCount} error(s)${indentNote} — ${res.firstError}`;
+      } else if (state.learnedText.length === 0) {
+        el.learnMsg.textContent = "Click inside the box and type. Leading indentation & keywords are strict; spaces around , and = are flexible.";
+      } else {
+        el.learnMsg.textContent = `Keep typing... (${res.progress}% complete, 0 errors so far)`;
+      }
+    }
+
+    // =========================================================================
+    // 6. Test Mode & Final Mastery Validator (Line Alignment + Token LCS Diff)
+    // =========================================================================
+    function analyzeLineDiff(eLine, aLine) {
+      const eIndent = (eLine.match(/^[ \t]*/) || [""])[0];
+      const aIndent = (aLine.match(/^[ \t]*/) || [""])[0];
+      const eBody = eLine.slice(eIndent.length).trimEnd();
+      const aBody = aLine.slice(aIndent.length).trimEnd();
+
+      const eTokens = tokenizeCodeBody(eBody);
+      const aTokens = tokenizeCodeBody(aBody);
+
+      const eSig = [];
+      eTokens.forEach((t, idx) => { if (!t.isOpt) eSig.push({ text: t.text, idx }); });
+      const aSig = [];
+      aTokens.forEach((t, idx) => { if (!t.isOpt) aSig.push({ text: t.text, idx }); });
+
+      const m = eSig.length, n = aSig.length;
+      const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+      for (let i = m - 1; i >= 0; i--) {
+        for (let j = n - 1; j >= 0; j--) {
+          if (eSig[i].text === aSig[j].text) dp[i][j] = 1 + dp[i + 1][j + 1];
+          else dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+        }
+      }
+
+      const anchors = [];
+      let i = 0, j = 0;
+      while (i < m && j < n) {
+        if (eSig[i].text === aSig[j].text) {
+          anchors.push({ eIdx: eSig[i].idx, aIdx: aSig[j].idx });
+          i++; j++;
+        } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+          i++;
+        } else {
+          j++;
+        }
+      }
+
+      let expHtml = "";
+      let actHtml = "";
+      const reasons = [];
+      let hasIndentErr = false;
+
+      if (aIndent.includes("\t")) {
+        hasIndentErr = true;
+        reasons.push("Tab character found in indentation — use 4 spaces");
+        expHtml += eIndent.length ? renderVisibleSpaces(eIndent, true) : "";
+        actHtml += `<span class="hl-wrong-indent">${renderVisibleSpaces(aIndent.replace(/\t/g, "⇥"), true)}</span>`;
+      } else if (eIndent !== aIndent) {
+        hasIndentErr = true;
+        reasons.push(`Indentation mismatch: expected ${eIndent.length} spaces, got ${aIndent.length} spaces`);
+        expHtml += `<span class="hl-expected" title="Expected ${eIndent.length} spaces">${eIndent.length ? renderVisibleSpaces(eIndent, true) : "∅"}</span>`;
+        actHtml += `<span class="hl-wrong-indent" title="Typed ${aIndent.length} spaces">${aIndent.length ? renderVisibleSpaces(aIndent, true) : `[indent:0/${eIndent.length}]`}</span>`;
+      } else {
+        expHtml += renderVisibleSpaces(eIndent, true);
+        actHtml += renderVisibleSpaces(aIndent, true);
+      }
+
+      if (aBody.includes("\t")) {
+        reasons.push("Tab character found — use spaces");
+      }
+
+      let ePtr = 0, aPtr = 0;
+      const allAnchors = [...anchors, { eIdx: eTokens.length, aIdx: aTokens.length }];
+
+      for (const anc of allAnchors) {
+        let gapExpStr = "", gapExpSig = "";
+        while (ePtr < anc.eIdx) {
+          const tok = eTokens[ePtr++];
+          if (tok.isOpt) {
+            expHtml += renderVisibleSpaces(tok.text, true);
+          } else {
+            gapExpStr += tok.text;
+            gapExpSig += tok.text;
+            expHtml += `<span class="hl-expected">${renderVisibleSpaces(tok.text, true)}</span>`;
+          }
+        }
+
+        let gapActStr = "", gapActSig = "";
+        while (aPtr < anc.aIdx) {
+          const tok = aTokens[aPtr++];
+          if (tok.isOpt) {
+            actHtml += renderVisibleSpaces(tok.text, true);
+          } else {
+            gapActStr += tok.text;
+            gapActSig += tok.text;
+            actHtml += `<span class="hl-wrong">${renderVisibleSpaces(tok.text, true)}</span>`;
+          }
+        }
+
+        const expTrim = gapExpSig.trim();
+        const actTrim = gapActSig.trim();
+        if (expTrim && !actTrim) {
+          actHtml += `<span class="hl-miss-pill" title="Missing: ${escapeHtmlAttr(expTrim)}">+missing: ${escapeHtml(expTrim)}</span>`;
+          reasons.push(`Missing "${expTrim}"`);
+        } else if (!expTrim && actTrim) {
+          reasons.push(`Unexpected "${actTrim}"`);
+        } else if (expTrim && actTrim) {
+          if (expTrim.toLowerCase() === actTrim.toLowerCase()) {
+            reasons.push(`Case error "${actTrim}" → "${expTrim}"`);
+          } else {
+            reasons.push(`Typed "${actTrim}" instead of "${expTrim}"`);
+          }
+        } else if (gapExpStr !== gapActStr) {
+          reasons.push("Keyword/operator spacing error (e.g. ==, !=, or keyword space)");
+        }
+
+        if (anc.eIdx < eTokens.length) {
+          expHtml += renderVisibleSpaces(eTokens[anc.eIdx].text, true);
+          ePtr = anc.eIdx + 1;
+        }
+        if (anc.aIdx < aTokens.length) {
+          actHtml += renderVisibleSpaces(aTokens[anc.aIdx].text, true);
+          aPtr = anc.aIdx + 1;
+        }
+      }
+
+      if (reasons.length === 0) reasons.push("Syntax / spacing mismatch");
+
+      return {
+        expHtml: expHtml || '<span class="txt-dim">(blank line)</span>',
+        actHtml: actHtml || '<span class="txt-dim">(blank line)</span>',
+        reason: reasons.slice(0, 2).join(" · "),
+        hasIndentErr
+      };
+    }
+
+    function lineSimilarity(a, b) {
+      const ta = new Set((a.match(/[A-Za-z_]\w*|\d+|./g) || []));
+      const tb = new Set((b.match(/[A-Za-z_]\w*|\d+|./g) || []));
+      if (ta.size === 0 && tb.size === 0) return 1;
+      let inter = 0;
+      ta.forEach(x => { if (tb.has(x)) inter++; });
+      return (2 * inter) / (ta.size + tb.size);
+    }
+
+    function alignLines(expItems, actItems) {
+      const m = expItems.length;
+      const n = actItems.length;
+      const normE = expItems.map(item => normalizeLineSpaces(item.text));
+      const normA = actItems.map(item => normalizeLineSpaces(item.text));
+
+      const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+      for (let i = m - 1; i >= 0; i--) {
+        for (let j = n - 1; j >= 0; j--) {
+          if (normE[i] === normA[j]) dp[i][j] = 1 + dp[i + 1][j + 1];
+          else dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+        }
+      }
+
+      const anchors = [];
+      let i = 0, j = 0;
+      while (i < m && j < n) {
+        if (normE[i] === normA[j]) {
+          anchors.push({ ei: i, ai: j });
+          i++; j++;
+        } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+          i++;
+        } else {
+          j++;
+        }
+      }
+
+      const ops = [];
+      let ePtr = 0, aPtr = 0;
+      const allAnchors = [...anchors, { ei: m, ai: n }];
+
+      for (const anc of allAnchors) {
+        const gapE = [];
+        while (ePtr < anc.ei) { gapE.push(expItems[ePtr++]); }
+        const gapA = [];
+        while (aPtr < anc.ai) { gapA.push(actItems[aPtr++]); }
+
+        if (gapE.length > 0 && gapA.length > 0) {
+          const usedA = new Set();
+          const pairs = [];
+          const missingE = [];
+          for (let geIdx = 0; geIdx < gapE.length; geIdx++) {
+            let bestAi = -1;
+            let bestSim = 0.15;
+            for (let gaIdx = 0; gaIdx < gapA.length; gaIdx++) {
+              if (usedA.has(gaIdx)) continue;
+              const sim = lineSimilarity(gapE[geIdx].text, gapA[gaIdx].text);
+              if (sim > bestSim) {
+                bestSim = sim;
+                bestAi = gaIdx;
+              }
+            }
+            if (bestAi !== -1) {
+              usedA.add(bestAi);
+              pairs.push({ e: gapE[geIdx], a: gapA[bestAi] });
+            } else {
+              missingE.push(gapE[geIdx]);
+            }
+          }
+          pairs.forEach(p => ops.push({ type: "modified", eLine: p.e.text, eNum: p.e.lineNum, aLine: p.a.text, aNum: p.a.lineNum }));
+          missingE.forEach(me => ops.push({ type: "missing", eLine: me.text, eNum: me.lineNum }));
+          gapA.forEach((ga, idx) => {
+            if (!usedA.has(idx)) ops.push({ type: "extra", aLine: ga.text, aNum: ga.lineNum });
+          });
+        } else {
+          gapE.forEach(me => ops.push({ type: "missing", eLine: me.text, eNum: me.lineNum }));
+          gapA.forEach(ga => ops.push({ type: "extra", aLine: ga.text, aNum: ga.lineNum }));
+        }
+
+        if (anc.ei < m && anc.ai < n) {
+          ops.push({
+            type: "match",
+            eLine: expItems[anc.ei].text,
+            eNum: expItems[anc.ei].lineNum,
+            aLine: actItems[anc.ai].text,
+            aNum: actItems[anc.ai].lineNum
+          });
+          ePtr = anc.ei + 1;
+          aPtr = anc.ai + 1;
+        }
+      }
+
+      return ops;
+    }
+
+    function jumpToTestLine(lineNum1Based) {
+      const lines = el.testInput.value.replace(/\r\n/g, "\n").split("\n");
+      const idx = Math.max(0, Math.min(lineNum1Based - 1, lines.length - 1));
+      let startPos = 0;
+      for (let i = 0; i < idx; i++) startPos += lines[i].length + 1;
+      const endPos = startPos + (lines[idx] ? lines[idx].length : 0);
+      el.testInput.focus();
+      el.testInput.setSelectionRange(startPos, endPos);
+    }
+
+    function gradeStrict(expectedRaw, actualRaw, strictBlank) {
+      const expRawLines = expectedRaw.replace(/\r\n/g, "\n").split("\n");
+      const actRawLines = actualRaw.replace(/\r\n/g, "\n").split("\n");
+
+      let expItems = expRawLines.map((text, idx) => ({ text, lineNum: idx + 1 }));
+      let actItems = actRawLines.map((text, idx) => ({ text, lineNum: idx + 1 }));
+
+      if (!strictBlank) {
+        expItems = expItems.filter(it => it.text.trim() !== "");
+        actItems = actItems.filter(it => it.text.trim() !== "");
+      }
+
+      const ops = alignLines(expItems, actItems);
+
+      let charErrors = 0;
+      let indentErrors = 0;
+      let totalChars = 0;
+      let matchedChars = 0;
+      const rows = [];
+
+      for (const op of ops) {
+        if (op.type === "match") {
+          const eStr = op.eLine;
+          const aStr = op.aLine;
+          totalChars += eStr.length;
+          matchedChars += eStr.length;
+          const exactSame = eStr.trimEnd() === aStr.trimEnd();
+          rows.push({
+            lineLabel: `L${op.aNum}`,
+            jumpLine: op.aNum,
+            ok: true,
+            expHtml: renderVisibleSpaces(eStr, true) || '<span class="txt-dim">(blank line)</span>',
+            actHtml: renderVisibleSpaces(aStr, true) || '<span class="txt-dim">(blank line)</span>',
+            reason: exactSame ? "OK" : "OK (symbol spacing)"
+          });
+        } else if (op.type === "modified") {
+          const eStr = op.eLine;
+          const aStr = op.aLine;
+          totalChars += eStr.length;
+          const diff = analyzeLineDiff(eStr, aStr);
+          if (diff.hasIndentErr) indentErrors++;
+
+          const normE = normalizeLineSpaces(eStr).replace(/\u0001/g, "");
+          const normA = normalizeLineSpaces(aStr).replace(/\u0001/g, "");
+          const maxC = Math.max(normE.length, normA.length);
+          let lineDiffs = 0;
+          for (let c = 0; c < maxC; c++) {
+            if (normE[c] === normA[c]) matchedChars++;
+            else lineDiffs++;
+          }
+          charErrors += Math.max(1, lineDiffs);
+
+          rows.push({
+            lineLabel: `L${op.aNum}`,
+            jumpLine: op.aNum,
+            ok: false,
+            expHtml: diff.expHtml,
+            actHtml: diff.actHtml,
+            reason: diff.reason
+          });
+        } else if (op.type === "missing") {
+          totalChars += op.eLine.length;
+          charErrors += Math.max(1, op.eLine.length);
+          rows.push({
+            lineLabel: `T:${op.eNum}`,
+            jumpLine: null,
+            ok: false,
+            expHtml: `<span class="hl-expected">${renderVisibleSpaces(op.eLine, true) || "(blank line)"}</span>`,
+            actHtml: '<span class="hl-miss-pill">∅ Missing line</span>',
+            reason: op.eLine.trim() === "" ? "Expected blank separator line" : "Missing line"
+          });
+        } else if (op.type === "extra") {
+          charErrors += Math.max(1, op.aLine.length);
+          rows.push({
+            lineLabel: `L${op.aNum}`,
+            jumpLine: op.aNum,
+            ok: false,
+            expHtml: '<span class="txt-dim">∅ (not in target)</span>',
+            actHtml: `<span class="hl-wrong">${renderVisibleSpaces(op.aLine, true) || "(blank line)"}</span>`,
+            reason: op.aLine.trim() === "" ? "Unexpected blank line" : "Extra unexpected line"
+          });
+        }
+      }
+
+      const passed = ops.length > 0 && ops.every(op => op.type === "match");
+      const actLenNoNl = actItems.map(it => it.text).join("").length;
+      const accuracy = totalChars === 0
+        ? (passed ? 100 : 0)
+        : (passed ? 100 : Math.max(0, Math.min(100, Math.round((matchedChars / Math.max(totalChars, actLenNoNl)) * 100))));
+
+      return { passed, charErrors, indentErrors, accuracy, expCount: expItems.length, actCount: actItems.length, rows };
+    }
+
+    function verifyTestOrMastery() {
+      const target = getTargetText();
+      const typed = el.testInput.value;
+      const res = gradeStrict(target, typed, state.strictBlankLines);
+
+      el.statAcc.textContent = `${res.accuracy}%`;
+      el.statAcc.className = "stat-val " + (res.passed ? "good" : "bad");
+      el.statErr.textContent = String(res.charErrors);
+      el.statErr.className = "stat-val " + (res.charErrors === 0 ? "good" : "bad");
+      el.statProg.textContent = res.passed ? "PASS" : "RETRY";
+      el.statProg.className = "stat-val " + (res.passed ? "good" : "bad");
+
+      const rec = getFileRecord();
+      const chunks = getCurrentChunks();
+
+      let nextBtnHtml = "";
+      if (res.passed) {
+        if (state.mode === "test") {
+          if (!rec.testedChunks.includes(state.chunkIndex)) rec.testedChunks.push(state.chunkIndex);
+          if (!rec.learnedChunks.includes(state.chunkIndex)) rec.learnedChunks.push(state.chunkIndex);
+          saveProgress();
+          renderStepper();
+          if (state.chunkIndex < chunks.length - 1) {
+            nextBtnHtml = `<button class="btn btn-success" id="btnNextFromReport" type="button">Next Chunk →</button>`;
+          } else {
+            nextBtnHtml = `<button class="btn btn-success" id="btnNextFromReport" type="button">Start Final Mastery Mode ★</button>`;
+          }
+        } else {
+          rec.masteryPassed = true;
+          chunks.forEach((_, idx) => {
+            if (!rec.testedChunks.includes(idx)) rec.testedChunks.push(idx);
+          });
+          saveProgress();
+          renderStepper();
+          updateOverallBadge();
+          renderExperimentOptions();
+          renderRoleButtons();
+
+          if (state.expId !== "custom") {
+            const otherRole = state.role === "server" ? "client" : "server";
+            if (!getFileRecord(`${state.expId}:${otherRole}`).masteryPassed) {
+              nextBtnHtml = `<button class="btn btn-success" id="btnNextRoleReport" type="button">Practice ${otherRole.toUpperCase()} File →</button>`;
+            } else {
+              const curIdx = EXPERIMENTS.findIndex(e => e.id === state.expId);
+              if (curIdx < EXPERIMENTS.length - 1) {
+                nextBtnHtml = `<button class="btn btn-success" id="btnNextExpReport" type="button">Next Experiment →</button>`;
+              }
+            }
+          }
+        }
+      }
+
+      const summaryTitle = res.passed
+        ? (state.mode === "mastery" ? "★ FINAL MASTERY PASSED! Zero errors across the entire program." : "✓ TEST PASSED! Zero errors — chunk mastered from memory.")
+        : `✗ ${res.charErrors} error(s) highlighted · ${res.indentErrors} indentation issue(s) (click any error row to jump)`;
+
+      const diffRows = res.rows.map(r => `
+        <tr class="${r.ok ? "diff-row-ok" : "diff-row-err"}${r.jumpLine ? " diff-row-clickable" : ""}" data-jump="${r.jumpLine || ""}">
+          <td class="diff-col-line">${r.lineLabel}</td>
+          <td class="diff-col-st">${r.ok ? '<span class="txt-ok">✓</span>' : '<span class="txt-bad">✗</span>'}</td>
+          <td>${r.actHtml}</td>
+          <td>${r.expHtml}</td>
+          <td class="err-reason">${r.ok ? `<span class="txt-ok">${escapeHtml(r.reason)}</span>` : escapeHtml(r.reason)}</td>
+        </tr>
+      `).join("");
+
+      el.reportContainer.innerHTML = `
+        <div class="report-box">
+          <div class="report-summary ${res.passed ? "pass" : "fail"}">
+            <div>
+              <div class="${res.passed ? "report-title-ok" : "report-title-bad"}">${summaryTitle}</div>
+              <div class="report-sub">
+                Accuracy: ${res.accuracy}% · Lines: ${res.actCount} / ${res.expCount} · Leading indent strict · Spaces around , &amp; = flexible
+              </div>
+            </div>
+            <div class="row-gap-8">${nextBtnHtml}</div>
+          </div>
+          <div class="table-scroll">
+            <table class="diff-table">
+              <thead>
+                <tr>
+                  <th>Line</th>
+                  <th>St</th>
+                  <th>Your Input</th>
+                  <th>Expected Code</th>
+                  <th>Diagnostic</th>
+                </tr>
+              </thead>
+              <tbody>${diffRows}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      el.reportContainer.querySelectorAll("tr[data-jump]").forEach(rowEl => {
+        const ln = Number(rowEl.getAttribute("data-jump"));
+        if (ln > 0) {
+          rowEl.addEventListener("click", () => jumpToTestLine(ln));
+        }
+      });
+
+      const nextBtn = document.getElementById("btnNextFromReport");
+      if (nextBtn) {
+        nextBtn.onclick = () => {
+          if (state.chunkIndex < chunks.length - 1) selectChunk(state.chunkIndex + 1);
+          else switchMode("mastery");
+        };
+      }
+      const nextRoleBtn = document.getElementById("btnNextRoleReport");
+      if (nextRoleBtn) {
+        nextRoleBtn.onclick = () => selectRole(state.role === "server" ? "client" : "server");
+      }
+      const nextExpBtn = document.getElementById("btnNextExpReport");
+      if (nextExpBtn) {
+        nextExpBtn.onclick = () => {
+          const curIdx = EXPERIMENTS.findIndex(e => e.id === state.expId);
+          if (curIdx < EXPERIMENTS.length - 1) selectExperiment(EXPERIMENTS[curIdx + 1].id);
+        };
+      }
+    }
+
+    function updateEditorGutter() {
+      syncEditorGutter(el.testInput, el.testGutter, el.editorMetrics);
+    }
+
+    // =========================================================================
+    // 7. Rendering Controls, Stepper & State Transitions
+    // =========================================================================
+    function renderCommonStrip() {
+      if (state.mode !== "learn") {
+        el.commonStrip.classList.add("is-hidden");
+        return;
+      }
+      el.commonStrip.classList.remove("is-hidden");
+
+      const fileKey = getFileKey();
+      const info = COMMON_FILE_INFO[fileKey];
+      if (info) {
+        el.commonSharedChips.innerHTML = info.shared
+          .map(s => `<code class="common-chip">${escapeHtml(s)}</code>`)
+          .join("");
+        el.commonUniqueNote.textContent = info.unique;
+      } else {
+        const lines = getCurrentFile().code.split("\n");
+        const detected = [];
+        lines.forEach(l => {
+          const note = getCommonLineNote(l);
+          if (note && detected.length < 6) {
+            const t = l.trim();
+            if (!detected.includes(t)) detected.push(t);
+          }
+        });
+        el.commonSharedChips.innerHTML = detected.length
+          ? detected.map(s => `<code class="common-chip">${escapeHtml(s)}</code>`).join("")
+          : '<span class="txt-dim">Custom code loaded</span>';
+        el.commonUniqueNote.textContent = "Custom code — common socket lines are tagged inline below.";
+      }
+    }
+
+    function renderExperimentOptions() {
+      const cur = state.expId;
+      el.expSelect.innerHTML = "";
+      for (const exp of EXPERIMENTS) {
+        const sDone = getFileRecord(`${exp.id}:server`).masteryPassed;
+        const cDone = getFileRecord(`${exp.id}:client`).masteryPassed;
+        const mark = sDone && cDone ? " [★ Mastered]" : (sDone || cDone ? " [◐ 1/2]" : "");
+        const opt = document.createElement("option");
+        opt.value = exp.id;
+        opt.textContent = exp.label + mark;
+        el.expSelect.appendChild(opt);
+      }
+      if (state.customEntry) {
+        const opt = document.createElement("option");
+        opt.value = "custom";
+        opt.textContent = "Custom Code (Auto-Chunked)";
+        el.expSelect.appendChild(opt);
+      }
+      el.expSelect.value = cur;
+    }
+
+    function renderRoleButtons() {
+      const exp = getCurrentExperiment();
+      if (exp.id === "custom") {
+        el.roleSwitcher.classList.add("is-hidden");
+        return;
+      }
+      el.roleSwitcher.classList.remove("is-hidden");
+      const sRec = getFileRecord(`${exp.id}:server`);
+      const cRec = getFileRecord(`${exp.id}:client`);
+      el.btnRoleServer.textContent = `Server (${exp.files.server.filename})${sRec.masteryPassed ? " ✓" : ""}`;
+      el.btnRoleClient.textContent = `Client (${exp.files.client.filename})${cRec.masteryPassed ? " ✓" : ""}`;
+      el.btnRoleServer.classList.toggle("active", state.role === "server");
+      el.btnRoleClient.classList.toggle("active", state.role === "client");
+    }
+
+    function updateOverallBadge() {
+      let count = 0;
+      for (const exp of EXPERIMENTS) {
+        if (getFileRecord(`${exp.id}:server`).masteryPassed) count++;
+        if (getFileRecord(`${exp.id}:client`).masteryPassed) count++;
+      }
+      el.overallMastered.textContent = `${count} / ${EXPERIMENTS.length * 2}`;
+    }
+
+    function renderStepper() {
+      const chunks = getCurrentChunks();
+      const rec = getFileRecord();
+      el.stepperTrack.innerHTML = "";
+
+      const masteredChunks = chunks.filter((_, i) => rec.testedChunks.includes(i)).length;
+      el.progressionHint.textContent = `${masteredChunks}/${chunks.length} Tested`;
+
+      chunks.forEach((chunk, idx) => {
+        const unlocked = isChunkUnlocked(idx);
+        const isLearned = rec.learnedChunks.includes(idx);
+        const isTested = rec.testedChunks.includes(idx);
+        const isActive = state.mode !== "mastery" && state.chunkIndex === idx;
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "step-pill" + (isActive ? " active" : "") + (isTested ? " mastered" : "");
+        btn.disabled = !unlocked;
+        btn.innerHTML = `
+          <div class="step-pill-top">
+            <span>${idx + 1}. ${chunk.meta.badge}</span>
+            <span class="step-dots">
+              <span class="dot${isLearned ? " learned" : ""}" title="Learned"></span>
+              <span class="dot${isTested ? " tested" : ""}" title="Tested"></span>
+            </span>
+          </div>
+          <div class="step-pill-name">${chunk.meta.short}</div>
+        `;
+        btn.onclick = () => selectChunk(idx);
+        el.stepperTrack.appendChild(btn);
+      });
+
+      const masteryBtn = document.createElement("button");
+      masteryBtn.type = "button";
+      const masteryOpen = isMasteryUnlocked();
+      masteryBtn.className = "step-pill" + (state.mode === "mastery" ? " active" : "") + (rec.masteryPassed ? " mastered" : "");
+      masteryBtn.disabled = !masteryOpen;
+      masteryBtn.innerHTML = `
+        <div class="step-pill-top">
+          <span>★ FULL</span>
+          <span>${rec.masteryPassed ? "✓" : (masteryOpen ? "Ready" : "Locked")}</span>
+        </div>
+        <div class="step-pill-name">Final Mastery</div>
+      `;
+      masteryBtn.onclick = () => switchMode("mastery");
+      el.stepperTrack.appendChild(masteryBtn);
+    }
+
+    function renderAll() {
+      const exp = getCurrentExperiment();
+      const file = getCurrentFile();
+      const chunks = getCurrentChunks();
+      if (state.chunkIndex >= chunks.length) state.chunkIndex = 0;
+
+      renderExperimentOptions();
+      renderRoleButtons();
+      updateOverallBadge();
+
+      el.protoBadge.textContent = exp.port ? `${exp.protocol} :${exp.port}` : exp.protocol;
+      el.aimFileLabel.textContent = file.filename;
+      el.aimText.textContent = exp.aim;
+      el.chunkCountSummary.textContent = `${chunks.length} Auto-Chunk${chunks.length === 1 ? "" : "s"}`;
+      el.splitModeSelect.value = state.splitMode;
+
+      el.refTitle.textContent = file.filename;
+      el.refCodePre.textContent = file.code;
+
+      renderCommonStrip();
+
+      // Mode buttons
+      document.querySelectorAll("#modeSwitcher .seg-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.mode === state.mode);
+      });
+
+      renderStepper();
+
+      if (state.mode === "learn") {
+        const chunk = chunks[state.chunkIndex];
+        el.activeSecTag.className = `sec-tag ${chunk.meta.cls}`;
+        el.activeSecTag.textContent = chunk.meta.label;
+        el.activeChunkTitle.textContent = `Chunk ${state.chunkIndex + 1} of ${chunks.length} · ${file.filename}`;
+
+        el.learnView.classList.remove("is-hidden");
+        el.testView.classList.add("is-hidden");
+        renderLearnView();
+      } else {
+        el.learnView.classList.add("is-hidden");
+        el.testView.classList.remove("is-hidden");
+
+        if (state.mode === "mastery") {
+          el.activeSecTag.className = "sec-tag sec-mastery";
+          el.activeSecTag.textContent = "★ Final Mastery Mode";
+          el.activeChunkTitle.textContent = `Full Program (${file.filename}) · ${file.code.split("\n").length} lines`;
+          el.testInstruction.innerHTML = 'Type the <strong>entire program</strong> from memory. Gedit <kbd>Enter</kbd> auto-indent enabled · Spaces around <code>,</code> &amp; <code>=</code> flexible · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to verify.';
+          el.wrapStrictBlank.classList.remove("is-hidden");
+          el.masterySectionChecklist.classList.remove("is-hidden");
+          el.masterySectionChecklist.innerHTML = chunks.map((c, i) => `<span class="sec-chip">${i + 1}. ${c.meta.label}</span>`).join("");
+          el.btnBackToLearn.classList.add("is-hidden");
+        } else {
+          const chunk = chunks[state.chunkIndex];
+          el.activeSecTag.className = `sec-tag ${chunk.meta.cls}`;
+          el.activeSecTag.textContent = chunk.meta.label;
+          el.activeChunkTitle.textContent = `Test Chunk ${state.chunkIndex + 1} of ${chunks.length} · ${file.filename}`;
+          el.testInstruction.innerHTML = 'Type this section from memory (reference hidden). Gedit <kbd>Enter</kbd> auto-indent enabled · Spaces around <code>,</code> &amp; <code>=</code> flexible · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to verify.';
+          el.wrapStrictBlank.classList.remove("is-hidden");
+          el.masterySectionChecklist.classList.add("is-hidden");
+          el.btnBackToLearn.classList.remove("is-hidden");
+        }
+
+        el.statAcc.textContent = "—";
+        el.statAcc.className = "stat-val";
+        el.statErr.textContent = "—";
+        el.statErr.className = "stat-val";
+        el.statProg.textContent = "READY";
+        el.statProg.className = "stat-val";
+        updateEditorGutter();
+      }
+    }
+
+    function selectExperiment(expId) {
+      state.expId = expId;
+      state.chunkIndex = 0;
+      if (state.mode === "mastery" && !isMasteryUnlocked()) state.mode = "learn";
+      resetEditors();
+      renderAll();
+    }
+
+    function selectRole(role) {
+      state.role = role;
+      state.chunkIndex = 0;
+      if (state.mode === "mastery" && !isMasteryUnlocked()) state.mode = "learn";
+      resetEditors();
+      renderAll();
+    }
+
+    function selectChunk(idx) {
+      if (!isChunkUnlocked(idx)) {
+        showToast("Complete the previous chunk first (or enable 'Unlock All Chunks').");
+        return;
+      }
+      state.chunkIndex = idx;
+      if (state.mode === "mastery") state.mode = "learn";
+      resetEditors();
+      renderAll();
+      if (state.mode === "learn") el.learnInput.focus();
+      else el.testInput.focus();
+    }
+
+    function switchMode(mode) {
+      if (mode === "mastery" && !isMasteryUnlocked()) {
+        showToast("Complete all chunks first to unlock Final Mastery (or toggle 'Unlock All Chunks').");
+        return;
+      }
+      state.mode = mode;
+      // Hide reference & common drawers when entering test/mastery to prevent accidental peeking
+      if (mode !== "learn") {
+        el.refDrawer.classList.remove("open");
+        el.commonDrawer.classList.remove("open");
+      }
+      resetEditors();
+      renderAll();
+      if (mode === "learn") el.learnInput.focus();
+      else el.testInput.focus();
+    }
+
+    function resetEditors() {
+      state.learnedText = "";
+      el.learnInput.value = "";
+      el.testInput.value = "";
+      el.reportContainer.innerHTML = "";
+      el.peekBox.classList.add("is-hidden");
+    }
+
+    // =========================================================================
+    // 8. Event Listeners (Gedit Auto-Indent, Smart Backspace, Tab, Paste Guard)
+    // =========================================================================
+    function insertTextAtCursor(textarea, text) {
+      textarea.focus();
+      if (typeof document.execCommand === "function") {
+        try {
+          if (document.execCommand("insertText", false, text)) return;
+        } catch { }
+      }
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+      textarea.value = val.substring(0, start) + text + val.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    function replaceRangeAt(textarea, from, to, text, nextCursor) {
+      textarea.focus();
+      if (typeof document.execCommand === "function") {
+        try {
+          textarea.setSelectionRange(from, to);
+          if (document.execCommand("insertText", false, text)) {
+            if (typeof nextCursor === "number") {
+              textarea.setSelectionRange(nextCursor, nextCursor);
+            }
+            return;
+          }
+        } catch { }
+      }
+      const val = textarea.value;
+      textarea.value = val.substring(0, from) + text + val.substring(to);
+      const cur = typeof nextCursor === "number" ? nextCursor : from + text.length;
+      textarea.selectionStart = textarea.selectionEnd = cur;
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    function deleteRangeAt(textarea, delStart, delEnd, nextCursor) {
+      textarea.focus();
+      if (typeof document.execCommand === "function") {
+        try {
+          textarea.setSelectionRange(delStart, delEnd);
+          if (document.execCommand("delete")) {
+            textarea.setSelectionRange(nextCursor, nextCursor);
+            return;
+          }
+        } catch { }
+      }
+      const val = textarea.value;
+      textarea.value = val.substring(0, delStart) + val.substring(delEnd);
+      textarea.selectionStart = textarea.selectionEnd = nextCursor;
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    function bindGeditTextarea(textarea, options = {}) {
+      const { allowPaste = false, isLearn = false, isTest = false } = options;
+
+      textarea.addEventListener("keydown", (e) => {
+        if (e.key === "Tab") {
+          e.preventDefault();
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const val = textarea.value;
+
+          if (start !== end && val.slice(start, end).includes("\n")) {
+            // Multi-line block indent / unindent (exclude trailing empty line if selection stops at col 0)
+            const blockStart = val.lastIndexOf("\n", start - 1) + 1;
+            const effectiveEnd = (val[end - 1] === "\n" && end > start) ? end - 1 : end;
+            const rawBlock = val.slice(blockStart, effectiveEnd);
+            const blockLines = rawBlock.split("\n");
+            let updated;
+            if (e.shiftKey) {
+              updated = blockLines.map(l => l.replace(/^(?: {1,4}|\t)/, "")).join("\n");
+            } else {
+              updated = blockLines.map(l => "    " + l).join("\n");
+            }
+            replaceRangeAt(textarea, blockStart, effectiveEnd, updated, blockStart + updated.length);
+            textarea.setSelectionRange(blockStart, blockStart + updated.length);
+          } else if (e.shiftKey) {
+            const lineStart = val.lastIndexOf("\n", start - 1) + 1;
+            const lineLead = (val.substring(lineStart).match(/^(?: {1,4}|\t)/) || [""])[0];
+            if (lineLead.length > 0) {
+              const nextCur = Math.max(lineStart, start - lineLead.length);
+              deleteRangeAt(textarea, lineStart, lineStart + lineLead.length, nextCur);
+            }
+          } else {
+            insertTextAtCursor(textarea, "    ");
+          }
+        } else if (e.key === "Backspace" && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          if (start === end && start > 0) {
+            const val = textarea.value;
+            const lineStart = val.lastIndexOf("\n", start - 1) + 1;
+            const lineBeforeCursor = val.substring(lineStart, start);
+            if (/^ +$/.test(lineBeforeCursor)) {
+              e.preventDefault();
+              const removeCount = (lineBeforeCursor.length % 4) || 4;
+              deleteRangeAt(textarea, start - removeCount, start, start - removeCount);
+            }
+          }
+        } else if (e.key === "Enter") {
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            if (isTest) {
+              verifyTestOrMastery();
+            } else if (isLearn && analyzeLearnInput(getTargetText(), el.learnInput.value).isExactMatch) {
+              const chunks = getCurrentChunks();
+              if (state.chunkIndex < chunks.length - 1) selectChunk(state.chunkIndex + 1);
+              else switchMode("mastery");
+            }
+            return;
+          }
+
+          if (isLearn && analyzeLearnInput(getTargetText(), el.learnInput.value).isExactMatch) {
+            e.preventDefault();
+            const chunks = getCurrentChunks();
+            if (state.chunkIndex < chunks.length - 1) selectChunk(state.chunkIndex + 1);
+            else switchMode("mastery");
+            return;
+          }
+
+          // Gedit-style Python/C auto-indentation: preserve indent & add 4 spaces after ':', '(', '[', '{'
+          e.preventDefault();
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const val = textarea.value;
+          const lineStart = val.lastIndexOf("\n", start - 1) + 1;
+          const nextNl = val.indexOf("\n", end);
+          const lineEnd = nextNl === -1 ? val.length : nextNl;
+          const lineBeforeCursor = val.substring(lineStart, start);
+          const lineAfterCursor = val.substring(end, lineEnd);
+          const indent = (lineBeforeCursor.match(/^[ \t]*/) || [""])[0];
+          const trimmedLine = lineBeforeCursor.trimEnd();
+          const extraIndent = /[:(\[{]$/.test(trimmedLine) ? "    " : "";
+
+          if (trimmedLine === "" && indent.length > 0 && lineAfterCursor.trim() === "") {
+            // Leaving behind an auto-indented blank line: keep blank line clean while keeping indent on new line
+            replaceRangeAt(textarea, lineStart, lineEnd, "\n" + indent, lineStart + 1 + indent.length);
+          } else {
+            insertTextAtCursor(textarea, "\n" + indent + extraIndent);
+          }
+        }
+      });
+
+      if (!allowPaste) {
+        textarea.addEventListener("paste", (e) => {
+          e.preventDefault();
+          showToast("Paste disabled — type from memory!");
+        });
+      }
+    }
+
+    // Learn Mode wiring (separate Refer Code Box + visible Typing Text Box)
+    bindGeditTextarea(el.learnInput, { isLearn: true });
+
+    el.learnInput.addEventListener("input", () => {
+      state.learnedText = el.learnInput.value;
+      renderLearnView();
+    });
+    el.learnInput.addEventListener("scroll", () => { el.learnGutter.scrollTop = el.learnInput.scrollTop; });
+    el.learnInput.addEventListener("keyup", renderLearnView);
+    el.learnInput.addEventListener("click", renderLearnView);
+
+    el.chkCommonTags.addEventListener("change", (e) => {
+      state.showCommonTags = e.target.checked;
+      renderLearnView();
+    });
+
+    el.chkShowSpaces.addEventListener("change", (e) => {
+      state.showSpaceDots = e.target.checked;
+      renderLearnView();
+    });
+
+    el.btnLearnReset.addEventListener("click", () => {
+      state.learnedText = "";
+      el.learnInput.value = "";
+      renderLearnView();
+      el.learnInput.focus();
+    });
+
+    // Test & Mastery Mode wiring
+    bindGeditTextarea(el.testInput, { isTest: true });
+    el.testInput.addEventListener("input", updateEditorGutter);
+    el.testInput.addEventListener("scroll", () => { el.testGutter.scrollTop = el.testInput.scrollTop; });
+
+    el.btnVerify.addEventListener("click", verifyTestOrMastery);
+    el.btnBackToLearn.addEventListener("click", () => switchMode("learn"));
+    el.btnTestClear.addEventListener("click", () => {
+      el.testInput.value = "";
+      el.reportContainer.innerHTML = "";
+      el.statAcc.textContent = "—";
+      el.statAcc.className = "stat-val";
+      el.statErr.textContent = "—";
+      el.statErr.className = "stat-val";
+      el.statProg.textContent = "READY";
+      el.statProg.className = "stat-val";
+      updateEditorGutter();
+      el.testInput.focus();
+    });
+
+    let peekTimer = null;
+    el.btnPeek.addEventListener("click", () => {
+      el.peekBox.textContent = getTargetText();
+      el.peekBox.classList.remove("is-hidden");
+      clearTimeout(peekTimer);
+      peekTimer = setTimeout(() => { el.peekBox.classList.add("is-hidden"); }, 3000);
+    });
+
+    el.chkStrictBlank.addEventListener("change", (e) => {
+      state.strictBlankLines = e.target.checked;
+    });
+
+    // Top controls
+    el.expSelect.addEventListener("change", (e) => selectExperiment(e.target.value));
+    el.btnRoleServer.addEventListener("click", () => selectRole("server"));
+    el.btnRoleClient.addEventListener("click", () => selectRole("client"));
+    document.querySelectorAll("#modeSwitcher .seg-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchMode(btn.dataset.mode));
+    });
+
+    el.splitModeSelect.addEventListener("change", (e) => {
+      state.splitMode = e.target.value;
+      state.chunkIndex = 0;
+      if (state.mode === "mastery" && !isMasteryUnlocked()) state.mode = "learn";
+      resetEditors();
+      renderAll();
+    });
+
+    el.chkFreeNav.addEventListener("change", (e) => {
+      state.freeNav = e.target.checked;
+      renderStepper();
+    });
+
+    el.btnCommonToggle.addEventListener("click", () => el.commonDrawer.classList.toggle("open"));
+    el.btnCloseCommon.addEventListener("click", () => el.commonDrawer.classList.remove("open"));
+    el.btnRefToggle.addEventListener("click", () => el.refDrawer.classList.toggle("open"));
+    el.btnCloseRef.addEventListener("click", () => el.refDrawer.classList.remove("open"));
+
+    // Custom code modal
+    bindGeditTextarea(el.customCodeArea, { allowPaste: true });
+    el.btnCustomModal.addEventListener("click", () => {
+      el.customModal.classList.add("open");
+      el.customCodeArea.focus();
+    });
+    const closeModal = () => el.customModal.classList.remove("open");
+    el.btnCloseModal.addEventListener("click", closeModal);
+    el.btnCancelCustom.addEventListener("click", closeModal);
+    el.btnLoadCustom.addEventListener("click", () => {
+      const code = el.customCodeArea.value
+        .replace(/\r\n/g, "\n")
+        .replace(/\t/g, "    ")
+        .split("\n")
+        .map(l => l.trimEnd())
+        .join("\n")
+        .trim();
+      if (!code) { showToast("Please paste some code first."); return; }
+      state.customEntry = {
+        id: "custom",
+        label: "Custom Code (Auto-Chunked)",
+        protocol: "Custom",
+        port: "",
+        aim: "User-supplied code automatically chunked via Regex/heuristics.",
+        files: { server: { filename: "custom.py", code } }
+      };
+      state.expId = "custom";
+      state.role = "server";
+      state.chunkIndex = 0;
+      state.mode = "learn";
+      resetEditors();
+      closeModal();
+      renderAll();
+      showToast(`Auto-chunked into ${getCurrentChunks().length} section(s)!`);
+    });
+
+    el.btnResetProgress.addEventListener("click", () => {
+      state.progress = {};
+      saveProgress();
+      state.chunkIndex = 0;
+      if (state.mode === "mastery" && !state.freeNav) state.mode = "learn";
+      resetEditors();
+      renderAll();
+      showToast("Progress cleared.");
+    });
+
+    // Boot
+    renderAll();
+  </script>
+</body>
+
+</html>
